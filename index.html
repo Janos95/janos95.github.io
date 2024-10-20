@@ -56,6 +56,18 @@
         .social-links a:hover {
             text-decoration: underline;
         }
+        .about-section {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+        .about-text {
+            flex: 1;
+        }
+        .about-image {
+            max-width: 300px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -68,16 +80,12 @@
     <div class="container">
         <div class="content">
             <h2>About Me</h2>
-            <p>Hello! I'm Janos Meny, a mathematician and computer scientist with a passion for solving complex problems and exploring innovative ideas in the fields of geometry processing, optimization, and computer graphics.</p>
-            
-            <h2>Education</h2>
-            <p>I studied mathematics at the University of Bonn, where I developed a strong foundation in theoretical and applied mathematics. During my bachelor's degree, I dabbled in algebraic geometry, and in my master's program, I focused on PDE-constrained optimization.</p>
-            
-            <h2>Professional Experience</h2>
-            <ul>
-                <li><strong>Roblox</strong> - Currently working on realtime, fully networked solid modeling tools and various geometry processing algorithms.</li>
-                <li><strong>nTopology</strong> - Previously worked on geometry problems to improve implicit modeling and latticing tools, mainly for high performance 3D printing applications.</li>
-            </ul>
+            <div class="about-section">
+                <div class="about-text">
+                    <p>Hello! I'm Janos Meny, a mathematician who turned programmer, specializing in geometry processing, optimization, and computer graphics. I studied mathematics at the University of Bonn, focusing on algebraic geometry in my bachelor's and PDE-constrained optimization in my master's. Currently, I'm working at <a href="https://www.roblox.com" target="_blank">Roblox</a> on realtime, fully networked solid modeling tools and geometry processing algorithms. Previously, I was at <a href="https://ntop.com" target="_blank">nTopology</a>, improving implicit modeling and latticing tools for high performance 3D printing applications.</p>
+                </div>
+                <img src="janos_selfi.jpg" alt="Janos Meny" class="about-image">
+            </div>
             
             <h2>Interests</h2>
             <p>I am broadly interested in various fields, including:</p>
@@ -91,13 +99,13 @@
             </ul>
             
             <h2>Projects</h2>
-            <p>My career has been marked by diverse projects that blend my passion for mathematics and computer science. Here are some notable projects I've worked on:</p>
+            <p>A few projects I've worked on:</p>
             <div class="project">
-                <h3>"Mantis"</h3>
+                <h3><a href="https://github.com/Janos95/mantis" target="_blank">Mantis</a></h3>
                 <p>A blazing fast, SIMD-accelerated implementation for computing distance to triangle mesh. This project significantly improved performance in geometry processing tasks.</p>
             </div>
             <div class="project">
-                <h3>"Phasefield"</h3>
+                <h3><a href="https://github.com/Janos95/Phasefields" target="_blank">Phasefield</a></h3>
                 <p>A phasefield-based optimization framework for 3D surface segmentation. This project advanced the capabilities of 3D modeling and analysis in various applications.</p>
             </div>
             
