@@ -33,28 +33,44 @@
             margin-right: 10px;
         }
         .project {
-            margin-bottom: 24px;
+            margin-bottom: 28px;
         }
         .project-feature {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
             align-items: flex-start;
+        }
+        .project-media {
+            width: 180px;
+            flex-shrink: 0;
+            display: block;
         }
         .project-copy {
             flex: 1;
             min-width: 0;
         }
+        .project-copy h3 {
+            margin: 0 0 8px 0;
+        }
+        .project-copy p {
+            margin: 0 0 10px 0;
+        }
         .project-preview {
-            width: 100%;
-            max-width: 180px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            background-color: #fff;
+            width: 180px;
+            max-width: 100%;
+            height: auto;
             display: block;
+            background: transparent;
+            border: none;
+        }
+        .project-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .project-links a {
-            margin-right: 10px;
+            margin-right: 0;
         }
         @media (min-width: 768px) {
             .about-section {
@@ -66,6 +82,8 @@
             }
             .project-feature {
                 flex-direction: row;
+                align-items: center;
+                gap: 22px;
             }
         }
     </style>
@@ -86,7 +104,7 @@
         <p>A few projects I've worked on:</p>
         <div class="project">
             <div class="project-feature">
-                <a href="https://janos95.github.io/onion/" target="_blank">
+                <a class="project-media" href="https://janos95.github.io/onion/" target="_blank">
                     <img src="onion_preview.gif" alt="Onion chess preview" class="project-preview">
                 </a>
                 <div class="project-copy">
@@ -101,7 +119,7 @@
         </div>
         <div class="project">
             <div class="project-feature">
-                <a href="https://cs.nyu.edu/~sw4429/data/paper/sa25-solid.pdf" target="_blank">
+                <a class="project-media" href="https://cs.nyu.edu/~sw4429/data/paper/sa25-solid.pdf" target="_blank">
                     <img src="solid_shell_preview.jpg" alt="Solid-Shell Labeling preview" class="project-preview">
                 </a>
                 <div class="project-copy">
@@ -118,7 +136,7 @@
         </div>
         <div class="project">
             <div class="project-feature">
-                <a href="https://github.com/Janos95/mantis" target="_blank">
+                <a class="project-media" href="https://github.com/Janos95/mantis" target="_blank">
                     <img src="mantis_preview.svg" alt="Mantis preview" class="project-preview">
                 </a>
                 <div class="project-copy">
@@ -132,7 +150,7 @@
         </div>
         <div class="project">
             <div class="project-feature">
-                <a href="https://github.com/Janos95/Phasefields" target="_blank">
+                <a class="project-media" href="https://github.com/Janos95/Phasefields" target="_blank">
                     <img src="phasefield_preview_small.jpg" alt="Phasefield preview" class="project-preview">
                 </a>
                 <div class="project-copy">
