@@ -32,6 +32,25 @@
         .social-links a {
             margin-right: 10px;
         }
+        .project {
+            margin-bottom: 24px;
+        }
+        .project-feature {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .project-preview {
+            width: 100%;
+            max-width: 220px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+        }
+        .project-links a {
+            margin-right: 10px;
+        }
         @media (min-width: 768px) {
             .about-section {
                 flex-direction: row;
@@ -39,6 +58,9 @@
             }
             .about-image {
                 max-width: 300px;
+            }
+            .project-feature {
+                flex-direction: row;
             }
         }
     </style>
@@ -68,11 +90,35 @@
         
         <h2>Projects</h2>
         <p>A few projects I've worked on:</p>
-        <div>
+        <div class="project">
+            <div class="project-feature">
+                <a href="https://janos95.github.io/onion/" target="_blank">
+                    <img src="onion_preview.gif" alt="Onion chess preview" class="project-preview">
+                </a>
+                <div>
+                    <h3><a href="https://janos95.github.io/onion/" target="_blank">Onion</a></h3>
+                    <p>A simple chess engine with an sdf/WebGPU renderer.</p>
+                    <p class="project-links">
+                        <a href="https://janos95.github.io/onion/" target="_blank">Play</a>
+                        <a href="https://github.com/Janos95/onion" target="_blank">GitHub</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="project">
+            <h3><a href="https://cs.nyu.edu/~sw4429/data/paper/sa25-solid.pdf" target="_blank">Solid-Shell Labeling for Discrete Surfaces</a></h3>
+            <p>A SIGGRAPH Asia 2025 project on labeling discrete surfaces with a solid-shell structure.</p>
+            <p class="project-links">
+                <a href="https://cs.nyu.edu/~sw4429/data/paper/sa25-solid.pdf" target="_blank">Paper</a>
+                <a href="https://github.com/rachael-wang/SolidShellLabeling" target="_blank">Code</a>
+                <a href="https://cs.nyu.edu/~sw4429/data/video/sa25-solid.mp4" target="_blank">Video</a>
+            </p>
+        </div>
+        <div class="project">
             <h3><a href="https://github.com/Janos95/mantis" target="_blank">Mantis</a></h3>
             <p>A SIMD-accelerated algorithm for computing distances to triangle meshes.</p>
         </div>
-        <div>
+        <div class="project">
             <h3><a href="https://github.com/Janos95/Phasefields" target="_blank">Phasefield</a></h3>
             <p>A phasefield-based optimization framework for 3D surface segmentation.</p>
         </div>
