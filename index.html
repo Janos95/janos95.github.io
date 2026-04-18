@@ -43,8 +43,11 @@
         }
         .project-media {
             width: 180px;
+            height: 140px;
             flex-shrink: 0;
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
         }
         .project-copy {
             flex: 1;
@@ -58,11 +61,12 @@
         }
         .project-preview {
             width: 180px;
-            max-width: 100%;
-            height: auto;
+            height: 140px;
             display: block;
             background: transparent;
             border: none;
+            object-fit: contain;
+            object-position: left center;
         }
         .project-links {
             display: flex;
@@ -82,7 +86,7 @@
             }
             .project-feature {
                 flex-direction: row;
-                align-items: center;
+                align-items: flex-start;
                 gap: 22px;
             }
         }
