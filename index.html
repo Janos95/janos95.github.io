@@ -41,12 +41,17 @@
             gap: 16px;
             align-items: flex-start;
         }
+        .project-copy {
+            flex: 1;
+            min-width: 0;
+        }
         .project-preview {
             width: 100%;
-            max-width: 220px;
+            max-width: 180px;
             border-radius: 6px;
             border: 1px solid #ddd;
             background-color: #fff;
+            display: block;
         }
         .project-links a {
             margin-right: 10px;
@@ -95,7 +100,7 @@
                 <a href="https://janos95.github.io/onion/" target="_blank">
                     <img src="onion_preview.gif" alt="Onion chess preview" class="project-preview">
                 </a>
-                <div>
+                <div class="project-copy">
                     <h3><a href="https://janos95.github.io/onion/" target="_blank">Onion</a></h3>
                     <p>A simple chess engine with an sdf/WebGPU renderer.</p>
                     <p class="project-links">
@@ -110,7 +115,7 @@
                 <a href="https://cs.nyu.edu/~sw4429/data/paper/sa25-solid.pdf" target="_blank">
                     <img src="solid_shell_preview.jpg" alt="Solid-Shell Labeling preview" class="project-preview">
                 </a>
-                <div>
+                <div class="project-copy">
                     <h3><a href="https://cs.nyu.edu/~sw4429/data/paper/sa25-solid.pdf" target="_blank">Solid-Shell Labeling for Discrete Surfaces</a></h3>
                     <p>A SIGGRAPH Asia 2025 paper on labeling discrete surfaces with a solid-shell structure.</p>
                     <p>Authors: Siqi Wang, Janos Meny, Izak Grguric, Mehdi Rahimzadeh, Denis Zorin, Daniele Panozzo, and Hsueh-Ti Derek Liu.</p>
@@ -123,12 +128,32 @@
             </div>
         </div>
         <div class="project">
-            <h3><a href="https://github.com/Janos95/mantis" target="_blank">Mantis</a></h3>
-            <p>A SIMD-accelerated algorithm for computing distances to triangle meshes.</p>
+            <div class="project-feature">
+                <a href="https://github.com/Janos95/mantis" target="_blank">
+                    <img src="mantis_preview.svg" alt="Mantis preview" class="project-preview">
+                </a>
+                <div class="project-copy">
+                    <h3><a href="https://github.com/Janos95/mantis" target="_blank">Mantis</a></h3>
+                    <p>A SIMD-accelerated algorithm for computing distances to triangle meshes.</p>
+                    <p class="project-links">
+                        <a href="https://github.com/Janos95/mantis" target="_blank">GitHub</a>
+                    </p>
+                </div>
+            </div>
         </div>
         <div class="project">
-            <h3><a href="https://github.com/Janos95/Phasefields" target="_blank">Phasefield</a></h3>
-            <p>A phasefield-based optimization framework for 3D surface segmentation.</p>
+            <div class="project-feature">
+                <a href="https://github.com/Janos95/Phasefields" target="_blank">
+                    <img src="phasefield_preview_small.jpg" alt="Phasefield preview" class="project-preview">
+                </a>
+                <div class="project-copy">
+                    <h3><a href="https://github.com/Janos95/Phasefields" target="_blank">Phasefield</a></h3>
+                    <p>A phasefield-based optimization framework for 3D surface segmentation.</p>
+                    <p class="project-links">
+                        <a href="https://github.com/Janos95/Phasefields" target="_blank">GitHub</a>
+                    </p>
+                </div>
+            </div>
         </div>
         
         <h2>Contact</h2>
