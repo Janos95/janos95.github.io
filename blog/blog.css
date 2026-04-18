@@ -107,6 +107,10 @@ img {
     display: block;
 }
 
+.post-body .section-card + .section-card {
+    margin-top: 42px;
+}
+
 .section-card {
     padding: 0;
 }
@@ -128,16 +132,16 @@ img {
 }
 
 .figure-card {
-    margin: 18px 0 0;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background: #fff;
+    margin: 18px 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
 }
 
 .figure-card img {
     display: block;
-    margin: 0 auto 12px;
+    margin: 0 auto 10px;
     height: auto;
 }
 

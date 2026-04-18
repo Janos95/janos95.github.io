@@ -18,6 +18,18 @@
             margin-top: 18px;
         }
 
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .panel-header h3 {
+            margin: 0;
+        }
+
         .tool-panel {
             padding: 20px;
             border: 1px solid #dde5f0;
@@ -25,8 +37,54 @@
             background: #fbfdff;
         }
 
-        .tool-panel h3 {
-            margin-bottom: 10px;
+        .tool-panel > h3 {
+            margin-bottom: 14px;
+        }
+
+        .panel-stats {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .stat-pill {
+            padding: 4px 10px;
+            border: 1px solid #dde5f0;
+            border-radius: 999px;
+            background: #f8fafc;
+            color: #5b6778;
+            font-size: 0.92rem;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .compress-indicator {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            border: 2px solid #cbd5e1;
+            border-radius: 999px;
+            background: #ffffff;
+        }
+
+        .compress-indicator.running {
+            border-color: #a9c1ec;
+            border-top-color: #1d4ed8;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .compress-indicator.done {
+            border-color: #2f8f57;
+            background: #2f8f57;
+            box-shadow: 0 0 0 4px rgba(47, 143, 87, 0.12);
+        }
+
+        .compress-indicator.error {
+            border-color: #c44343;
+            background: #c44343;
+            box-shadow: 0 0 0 4px rgba(196, 67, 67, 0.12);
         }
 
         .canvas-frame {
@@ -84,35 +142,14 @@
             cursor: not-allowed;
         }
 
-        input[type="file"] {
-            width: 100%;
-            color: #5b6778;
-            font-family: Arial, sans-serif;
-        }
-
-        #status {
-            min-height: 160px;
-            max-height: 280px;
-            overflow-y: auto;
-            padding: 14px;
-            border: 1px solid #dde5f0;
-            border-radius: 16px;
-            background: #f8fafc;
-            font-family: Menlo, Consolas, monospace;
-            font-size: 0.93rem;
-            line-height: 1.55;
-            white-space: pre-wrap;
-        }
-
-        #iterationLabel {
-            margin-top: 12px;
-            color: #5b6778;
-            font-family: Arial, sans-serif;
-            font-size: 0.95rem;
-        }
-
         #workCanvas {
             display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         @media (min-width: 900px) {
@@ -165,44 +202,40 @@
             </section>
 
             <section class="section-card">
-                <h2>Try the demo</h2>
-                <p>Choose an image, compress it into an RGB block mapping, and then iterate the decompressor from random color noise toward the reconstruction.</p>
+                <h2>Demo</h2>
+                <p>Choose an image, compress it into an RGB block mapping, and then iterate the decompressor from random color noise.</p>
 
                 <div class="demo-grid">
                     <section class="tool-panel">
-                        <h3>1. Source image</h3>
-                        <p>Any image will be resized to \(512 \times 512\). The encoder chooses block geometry from luminance and fits the RGB channels separately.</p>
-                        <input type="file" id="imageInput" accept="image/*">
+                        <div class="panel-header">
+                            <h3>Compress</h3>
+                            <span id="compressIndicator" class="compress-indicator" aria-hidden="true"></span>
+                        </div>
                         <div class="canvas-frame">
                             <img id="originalPreview" alt="Original preview">
                         </div>
-                    </section>
-
-                    <section class="tool-panel">
-                        <h3>2. Compress</h3>
-                        <p>Run the encoder with \(8 \times 8 \to 4 \times 4\) mappings, spatial symmetries, and separate fitted color parameters for red, green, and blue.</p>
                         <div class="control-row">
-                            <button id="compressButton" disabled>Compress image</button>
+                            <button id="chooseButton" type="button">Choose image</button>
+                            <button id="compressButton" type="button" disabled>Compress</button>
                         </div>
+                        <input type="file" id="imageInput" accept="image/*" hidden>
                     </section>
 
                     <section class="tool-panel">
-                        <h3>3. Decompress</h3>
-                        <p>The canvas starts as random RGB noise. Apply the stored mapping once or in batches to watch the fixed point emerge.</p>
+                        <div class="panel-header">
+                            <h3>Decompress</h3>
+                            <div class="panel-stats" aria-live="polite">
+                                <span id="iterationStat" class="stat-pill">Iter 0</span>
+                                <span id="psnrStat" class="stat-pill">PSNR -</span>
+                            </div>
+                        </div>
                         <div class="canvas-frame">
                             <canvas id="decompressCanvas" width="512" height="512"></canvas>
                         </div>
                         <div class="control-row">
-                            <button id="iterateButton" disabled>Iterate once</button>
-                            <button id="iterate8Button" disabled>Run 8 iterations</button>
-                            <button id="resetButton" disabled>Reset noise</button>
+                            <button id="iterateButton" disabled>Iterate Once</button>
+                            <button id="resetButton">Reset noise</button>
                         </div>
-                        <div id="iterationLabel">Iterations: 0</div>
-                    </section>
-
-                    <section class="tool-panel">
-                        <h3>Status</h3>
-                        <div id="status" aria-live="polite">Load an image to begin.</div>
                     </section>
                 </div>
 
@@ -231,12 +264,13 @@
 
             var SIZE = window.FractalCodec.IMAGE_SIZE;
             var imageInput = document.getElementById('imageInput');
+            var chooseButton = document.getElementById('chooseButton');
             var compressButton = document.getElementById('compressButton');
             var iterateButton = document.getElementById('iterateButton');
-            var iterate8Button = document.getElementById('iterate8Button');
             var resetButton = document.getElementById('resetButton');
-            var statusBox = document.getElementById('status');
-            var iterationLabel = document.getElementById('iterationLabel');
+            var compressIndicator = document.getElementById('compressIndicator');
+            var iterationStat = document.getElementById('iterationStat');
+            var psnrStat = document.getElementById('psnrStat');
             var preview = document.getElementById('originalPreview');
             var workCanvas = document.getElementById('workCanvas');
             var workCtx = workCanvas.getContext('2d');
@@ -246,20 +280,53 @@
             var loadedImagePixels = null;
             var mapping = null;
             var currentImage = null;
-            var iterations = 0;
+            var iterationCount = 0;
 
-            function setStatus(text) {
-                statusBox.textContent = text;
+            function setCompressIndicator(state) {
+                compressIndicator.className = 'compress-indicator' + (state ? ' ' + state : '');
             }
 
-            function appendStatus(text) {
-                statusBox.textContent += '\n' + text;
+            function computePsnr() {
+                var mse = 0;
+                var value;
+                var diff;
+
+                if (!loadedImagePixels || !currentImage) {
+                    return null;
+                }
+
+                for (var i = 0; i < currentImage.length; i++) {
+                    value = currentImage[i];
+                    if (value < 0) {
+                        value = 0;
+                    } else if (value > 255) {
+                        value = 255;
+                    }
+
+                    diff = loadedImagePixels[i] - value;
+                    mse += diff * diff;
+                }
+
+                mse /= currentImage.length;
+
+                if (mse <= 1e-12) {
+                    return Infinity;
+                }
+
+                return 10 * (Math.log((255 * 255) / mse) / Math.LN10);
             }
 
-            function setDecodeButtons(enabled) {
-                iterateButton.disabled = !enabled;
-                iterate8Button.disabled = !enabled;
-                resetButton.disabled = !enabled;
+            function updateDecompressStats() {
+                var psnr = computePsnr();
+
+                iterationStat.textContent = 'Iter ' + iterationCount;
+                if (psnr === null) {
+                    psnrStat.textContent = 'PSNR -';
+                } else if (psnr === Infinity) {
+                    psnrStat.textContent = 'PSNR inf dB';
+                } else {
+                    psnrStat.textContent = 'PSNR ' + psnr.toFixed(2) + ' dB';
+                }
             }
 
             function renderCurrentImage() {
@@ -274,7 +341,7 @@
                 }
 
                 decompressCtx.putImageData(imageData, 0, 0);
-                iterationLabel.textContent = 'Iterations: ' + iterations;
+                updateDecompressStats();
             }
 
             function resetDecompressImage() {
@@ -282,9 +349,8 @@
                 for (var i = 0; i < currentImage.length; i++) {
                     currentImage[i] = Math.random() * 255;
                 }
-                iterations = 0;
+                iterationCount = 0;
                 renderCurrentImage();
-                appendStatus('Decompression buffer reset to random RGB noise.');
             }
 
             function extractRgbPixels() {
@@ -328,25 +394,8 @@
                     return;
                 }
                 currentImage = window.FractalCodec.iterateColor(currentImage, mapping);
-                iterations += 1;
+                iterationCount += 1;
                 renderCurrentImage();
-            }
-
-            function iterateEight() {
-                var start;
-                var i;
-
-                if (!mapping || !currentImage) {
-                    return;
-                }
-
-                start = performance.now();
-                for (i = 0; i < 8; i++) {
-                    currentImage = window.FractalCodec.iterateColor(currentImage, mapping);
-                    iterations += 1;
-                }
-                renderCurrentImage();
-                appendStatus('Ran 8 iterations in ' + ((performance.now() - start) / 1000).toFixed(2) + ' seconds.');
             }
 
             function handleCompress() {
@@ -354,16 +403,17 @@
                     return Promise.resolve();
                 }
 
-                setStatus('Compressing...');
+                compressButton.disabled = true;
+                setCompressIndicator('running');
 
                 return new Promise(function (resolve) {
                     window.setTimeout(resolve, 10);
                 }).then(function () {
-                    var start = performance.now();
                     mapping = window.FractalCodec.compressColorFromPixels(loadedImagePixels);
-                    appendStatus('RGB compression complete in ' + ((performance.now() - start) / 1000).toFixed(2) + ' seconds.');
-                    setDecodeButtons(true);
+                    iterateButton.disabled = false;
+                    setCompressIndicator('done');
                     resetDecompressImage();
+                    compressButton.disabled = false;
                 });
             }
 
@@ -373,41 +423,47 @@
                 mapping = null;
                 loadedImagePixels = null;
                 compressButton.disabled = true;
-                setDecodeButtons(false);
+                iterateButton.disabled = true;
+                setCompressIndicator('');
+                updateDecompressStats();
 
                 if (!file) {
                     preview.removeAttribute('src');
-                    setStatus('Load an image to begin.');
                     return;
                 }
 
-                setStatus('Loading image...');
                 loadImage(file).then(function () {
                     loadedImagePixels = extractRgbPixels();
                     compressButton.disabled = false;
-                    setStatus('Image ready. Press "Compress image" to encode RGB channels.');
+                    updateDecompressStats();
                 }).catch(function (error) {
                     console.error(error);
-                    setStatus('Failed to load image. Try a different file.');
                     compressButton.disabled = true;
+                    setCompressIndicator('error');
                 });
+            });
+
+            chooseButton.addEventListener('click', function () {
+                imageInput.value = '';
+                imageInput.click();
             });
 
             compressButton.addEventListener('click', function () {
                 handleCompress().catch(function (error) {
                     console.error(error);
-                    appendStatus('Compression error: ' + error.message);
+                    compressButton.disabled = false;
+                    iterateButton.disabled = true;
+                    setCompressIndicator('error');
                 });
             });
 
             iterateButton.addEventListener('click', iterateOnce);
-            iterate8Button.addEventListener('click', iterateEight);
             resetButton.addEventListener('click', resetDecompressImage);
 
             resetDecompressImage();
             compressButton.disabled = true;
-            setDecodeButtons(false);
-            setStatus('Load an image to begin.');
+            iterateButton.disabled = true;
+            setCompressIndicator('');
         });
     </script>
 </body>
