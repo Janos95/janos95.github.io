@@ -1,0 +1,177 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    color-scheme: light;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #222;
+    background-color: #f4f4f4;
+}
+
+img {
+    max-width: 100%;
+}
+
+.page-shell {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.page-nav {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.nav-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-link {
+    display: inline-block;
+    padding: 5px 12px;
+    border: 1px solid #c9cfd8;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #444;
+    text-decoration: none;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+    transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible {
+    background: #eef3fb;
+    border-color: #b7c6df;
+    color: #204f9a;
+}
+
+.nav-link.active {
+    background: #e7eefb;
+    border-color: #b7c6df;
+    color: #204f9a;
+    font-weight: 600;
+}
+
+.hero {
+    margin-bottom: 20px;
+}
+
+.eyebrow {
+    display: none;
+}
+
+.hero h1 {
+    margin: 0 0 12px 0;
+    font-size: 2rem;
+    line-height: 1.2;
+    color: #333;
+}
+
+.hero p {
+    margin: 0;
+}
+
+.dek {
+    max-width: none;
+    color: #222;
+    font-size: 1rem;
+}
+
+.meta {
+    margin-top: 10px;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.page-shell h1,
+.page-shell h2 {
+    color: #333;
+}
+
+.post-body,
+.card-grid {
+    display: block;
+}
+
+.section-card {
+    padding: 0;
+}
+
+.section-card h2,
+.section-card h3 {
+    margin: 0 0 10px 0;
+    line-height: 1.2;
+    color: #333;
+}
+
+.section-card p {
+    margin: 0 0 14px;
+}
+
+.section-card p:last-child,
+.section-card ul:last-child {
+    margin-bottom: 0;
+}
+
+.figure-card {
+    margin: 18px 0 0;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.figure-card img {
+    display: block;
+    margin: 0 auto 12px;
+    height: auto;
+}
+
+.figure-card figcaption {
+    color: #555;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.link-row {
+    margin-top: 10px;
+}
+
+.link-pill {
+    color: #0000ee;
+}
+
+.list-clean {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.list-clean li + li {
+    margin-top: 8px;
+}
+
+.katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.3rem 0;
+}
+
+@media (max-width: 640px) {
+    .page-nav {
+        justify-content: flex-end;
+    }
+}

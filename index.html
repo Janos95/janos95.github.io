@@ -4,43 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Janos Meny - Personal Website</title>
+    <meta name="description" content="Janos Meny - geometry processing, optimization, and computer graphics.">
+    <link rel="stylesheet" href="blog/blog.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-        }
-        h1, h2 {
-            color: #333;
-        }
         .about-section {
             display: flex;
             flex-direction: column;
-            align-items: center;
             gap: 20px;
+            align-items: center;
         }
+
         .about-image {
-            max-width: 100%;
+            width: min(100%, 320px);
             border-radius: 5px;
         }
-        .social-links a {
-            margin-right: 10px;
-        }
+
         .project {
             margin-bottom: 28px;
         }
+
         .project-feature {
             display: flex;
             flex-direction: column;
             gap: 12px;
             align-items: flex-start;
         }
+
         .project-media {
             width: 180px;
             height: 140px;
@@ -49,16 +38,7 @@
             align-items: center;
             justify-content: flex-start;
         }
-        .project-copy {
-            flex: 1;
-            min-width: 0;
-        }
-        .project-copy h3 {
-            margin: 0 0 8px 0;
-        }
-        .project-copy p {
-            margin: 0 0 10px 0;
-        }
+
         .project-preview {
             width: 180px;
             height: 140px;
@@ -68,22 +48,33 @@
             object-fit: contain;
             object-position: left center;
         }
-        .project-links {
+
+        .project-copy {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .project-copy h3 {
+            margin: 0 0 8px;
+        }
+
+        .project-copy p {
+            margin: 0 0 10px;
+        }
+
+        .project-links,
+        .social-links {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
         }
-        .project-links a {
-            margin-right: 0;
-        }
+
         @media (min-width: 768px) {
             .about-section {
                 flex-direction: row;
                 align-items: flex-start;
             }
-            .about-image {
-                max-width: 300px;
-            }
+
             .project-feature {
                 flex-direction: row;
                 align-items: flex-start;
@@ -93,98 +84,98 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <main class="page-shell">
+        <nav class="page-nav" aria-label="Primary">
+            <div class="nav-group">
+                <a class="nav-link active" href="index.html" aria-current="page">Home</a>
+                <a class="nav-link" href="blog/index.html">Blog</a>
+            </div>
+        </nav>
+
         <h1>Janos Meny</h1>
-        
+
         <h2>About Me</h2>
         <div class="about-section">
             <div>
-                <p>Hello! I'm Janos Meny, a mathematician by training and now a software engineer, specializing in geometry processing, optimization, and computer graphics. I studied mathematics at the University of Bonn, focusing on algebraic geometry during my bachelor's and on PDE-constrained optimization during my master's. Currently, I work on <a href="https://www.roblox.com" target="_blank">Roblox's</a> game engine, focusing primarily on geometry processing algorithms, with additional work in collision, networking, and graphics. Previously, I was at <a href="https://ntop.com" target="_blank">nTop</a>, working on implicit modeling and latticing tools for high-performance 3D printing applications.</p>
+                <p>Hello! I'm Janos Meny, a mathematician by training and now a software engineer, specializing in geometry processing, optimization, and computer graphics. I studied mathematics at the University of Bonn, focusing on algebraic geometry during my bachelor's and on PDE-constrained optimization during my master's. Currently, I work on <a href="https://www.roblox.com" target="_blank" rel="noopener noreferrer">Roblox's</a> game engine, focusing primarily on geometry processing algorithms, with additional work in collision, networking, and graphics. Previously, I was at <a href="https://ntop.com" target="_blank" rel="noopener noreferrer">nTop</a>, working on implicit modeling and latticing tools for high-performance 3D printing applications.</p>
             </div>
             <img src="janos_selfi.jpg" alt="Janos Meny" class="about-image">
         </div>
-        
+
         <h2>Projects</h2>
         <p>A few projects I've worked on:</p>
+
         <div class="project">
             <div class="project-feature">
-                <a class="project-media" href="https://janos95.github.io/onion/" target="_blank">
+                <a class="project-media" href="https://janos95.github.io/onion/" target="_blank" rel="noopener noreferrer">
                     <img src="onion_preview.gif" alt="Onion chess preview" class="project-preview">
                 </a>
                 <div class="project-copy">
-                    <h3><a href="https://janos95.github.io/onion/" target="_blank">Onion</a></h3>
+                    <h3><a href="https://janos95.github.io/onion/" target="_blank" rel="noopener noreferrer">Onion</a></h3>
                     <p>A simple chess engine with an sdf/WebGPU renderer.</p>
                     <p class="project-links">
-                        <a href="https://janos95.github.io/onion/" target="_blank">Play</a>
-                        <a href="https://github.com/Janos95/onion" target="_blank">GitHub</a>
+                        <a href="https://janos95.github.io/onion/" target="_blank" rel="noopener noreferrer">Play</a>
+                        <a href="https://github.com/Janos95/onion" target="_blank" rel="noopener noreferrer">GitHub</a>
                     </p>
                 </div>
             </div>
         </div>
+
         <div class="project">
             <div class="project-feature">
-                <a class="project-media" href="https://cs.nyu.edu/~sw4429/data/paper/sa25-solid.pdf" target="_blank">
+                <a class="project-media" href="https://cs.nyu.edu/~sw4429/data/paper/sa25-solid.pdf" target="_blank" rel="noopener noreferrer">
                     <img src="solid_shell_preview.png" alt="Solid-Shell Labeling preview" class="project-preview">
                 </a>
                 <div class="project-copy">
-                    <h3><a href="https://cs.nyu.edu/~sw4429/data/paper/sa25-solid.pdf" target="_blank">Solid-Shell Labeling for Discrete Surfaces</a></h3>
+                    <h3><a href="https://cs.nyu.edu/~sw4429/data/paper/sa25-solid.pdf" target="_blank" rel="noopener noreferrer">Solid-Shell Labeling for Discrete Surfaces</a></h3>
                     <p>A SIGGRAPH Asia 2025 paper on labeling discrete surfaces with a solid-shell structure.</p>
                     <p>Authors: Siqi Wang, Janos Meny, Izak Grguric, Mehdi Rahimzadeh, Denis Zorin, Daniele Panozzo, and Hsueh-Ti Derek Liu.</p>
                     <p class="project-links">
-                        <a href="https://cs.nyu.edu/~sw4429/data/paper/sa25-solid.pdf" target="_blank">Paper</a>
-                        <a href="https://github.com/rachael-wang/SolidShellLabeling" target="_blank">Code</a>
-                        <a href="https://cs.nyu.edu/~sw4429/data/video/sa25-solid.mp4" target="_blank">Video</a>
+                        <a href="https://cs.nyu.edu/~sw4429/data/paper/sa25-solid.pdf" target="_blank" rel="noopener noreferrer">Paper</a>
+                        <a href="https://github.com/rachael-wang/SolidShellLabeling" target="_blank" rel="noopener noreferrer">Code</a>
+                        <a href="https://cs.nyu.edu/~sw4429/data/video/sa25-solid.mp4" target="_blank" rel="noopener noreferrer">Video</a>
                     </p>
                 </div>
             </div>
         </div>
+
         <div class="project">
             <div class="project-feature">
-                <a class="project-media" href="https://github.com/Janos95/mantis" target="_blank">
+                <a class="project-media" href="https://github.com/Janos95/mantis" target="_blank" rel="noopener noreferrer">
                     <img src="mantis_preview.png" alt="Mantis preview" class="project-preview">
                 </a>
                 <div class="project-copy">
-                    <h3><a href="https://github.com/Janos95/mantis" target="_blank">Mantis</a></h3>
+                    <h3><a href="https://github.com/Janos95/mantis" target="_blank" rel="noopener noreferrer">Mantis</a></h3>
                     <p>A SIMD-accelerated algorithm for computing distances to triangle meshes.</p>
                     <p class="project-links">
-                        <a href="https://github.com/Janos95/mantis" target="_blank">GitHub</a>
+                        <a href="https://github.com/Janos95/mantis" target="_blank" rel="noopener noreferrer">GitHub</a>
                     </p>
                 </div>
             </div>
         </div>
+
         <div class="project">
             <div class="project-feature">
-                <a class="project-media" href="https://github.com/Janos95/Phasefields" target="_blank">
+                <a class="project-media" href="https://github.com/Janos95/Phasefields" target="_blank" rel="noopener noreferrer">
                     <img src="phasefield_preview_small.png" alt="Phasefield preview" class="project-preview">
                 </a>
                 <div class="project-copy">
-                    <h3><a href="https://github.com/Janos95/Phasefields" target="_blank">Phasefield</a></h3>
+                    <h3><a href="https://github.com/Janos95/Phasefields" target="_blank" rel="noopener noreferrer">Phasefield</a></h3>
                     <p>A phasefield-based optimization framework for 3D surface segmentation.</p>
                     <p class="project-links">
-                        <a href="https://github.com/Janos95/Phasefields" target="_blank">GitHub</a>
+                        <a href="https://github.com/Janos95/Phasefields" target="_blank" rel="noopener noreferrer">GitHub</a>
                     </p>
                 </div>
             </div>
         </div>
-        
-        <h2>Interests</h2>
-        <p>I am broadly interested in various fields, including:</p>
-        <ul>
-            <li>Computational Geometry</li>
-            <li>Computer Graphics</li>
-            <li>Numerical Optimization</li>
-            <li>Robotics</li>
-            <li>Compilers and Programming Languages</li>
-            <li>Applied Mathematics</li>
-        </ul>
-        
+
         <h2>Contact</h2>
         <p>If you'd like to discuss math, technology, or any interesting projects, feel free to reach out to me.</p>
         <div class="social-links">
-            <a href="https://github.com/janos95" target="_blank">GitHub</a>
-            <a href="https://twitter.com/MenyJanos" target="_blank">Twitter</a>
+            <a href="https://github.com/janos95" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://twitter.com/MenyJanos" target="_blank" rel="noopener noreferrer">Twitter</a>
             <a href="mailto:janos.meny@googlemail.com">Email</a>
         </div>
-    </div>
+    </main>
 </body>
 </html>
