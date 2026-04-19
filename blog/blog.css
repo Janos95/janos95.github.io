@@ -132,15 +132,16 @@ img {
 }
 
 .post-entry {
-    display: flex;
+    --post-preview-width: clamp(112px, 30vw, 192px);
+    display: grid;
+    grid-template-columns: var(--post-preview-width) minmax(0, 1fr);
     align-items: flex-start;
-    gap: 24px;
+    gap: 18px;
 }
 
 .post-preview-link {
     display: block;
-    flex: 0 0 192px;
-    width: 192px;
+    width: 100%;
     margin: 0;
     border: 1px solid #d7dde6;
     border-radius: 18px;
@@ -162,6 +163,7 @@ img {
 
 .post-copy {
     flex: 1 1 auto;
+    min-width: 0;
 }
 
 .post-copy h2 {
@@ -215,17 +217,13 @@ img {
     padding: 0.3rem 0;
 }
 
-@media (max-width: 560px) {
+@media (max-width: 380px) {
     .page-nav {
         justify-content: flex-end;
     }
 
     .post-entry {
-        display: block;
-    }
-
-    .post-preview-link {
-        width: min(100%, 360px);
-        margin: 0 0 16px;
+        --post-preview-width: 100px;
+        gap: 12px;
     }
 }

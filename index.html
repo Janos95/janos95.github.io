@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Janos Meny - Personal Website</title>
     <meta name="description" content="Janos Meny - geometry processing, optimization, and computer graphics.">
-    <link rel="stylesheet" href="blog/blog.css">
+    <link rel="stylesheet" href="blog/blog.css?v=20260419b">
     <style>
         .about-section {
             display: flex;
@@ -24,24 +24,25 @@
         }
 
         .project-feature {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            --project-thumb-width: clamp(104px, 28vw, 180px);
+            --project-thumb-height: calc(var(--project-thumb-width) * 0.78);
+            display: grid;
+            grid-template-columns: var(--project-thumb-width) minmax(0, 1fr);
+            gap: 16px;
             align-items: flex-start;
         }
 
         .project-media {
-            width: 180px;
-            height: 140px;
-            flex-shrink: 0;
+            width: var(--project-thumb-width);
+            height: var(--project-thumb-height);
             display: flex;
             align-items: center;
             justify-content: flex-start;
         }
 
         .project-preview {
-            width: 180px;
-            height: 140px;
+            width: 100%;
+            height: 100%;
             display: block;
             background: transparent;
             border: none;
@@ -76,9 +77,14 @@
             }
 
             .project-feature {
-                flex-direction: row;
-                align-items: flex-start;
                 gap: 22px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .project-feature {
+                --project-thumb-width: 92px;
+                gap: 12px;
             }
         }
     </style>
