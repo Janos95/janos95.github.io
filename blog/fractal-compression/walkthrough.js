@@ -54,34 +54,34 @@
         rootOnly: true,
         showDomain: false,
         visibleDepth: 0,
-        caption: 'Start with one ' + RANGE_SIZE + ' x ' + RANGE_SIZE + ' range block in Lenna.'
+        caption: 'For compression, start with one range block, shown in orange.'
       },
       {
         frame: 'lenna',
         rootOnly: true,
         showDomain: true,
         visibleDepth: 0,
-        caption: 'The stored map picks one best ' + DOMAIN_SIZE + ' x ' + DOMAIN_SIZE + ' domain block and contracts it onto that range.'
+        caption: 'We search over all domain blocks and keep the one whose contracted copy best matches the chosen range block.'
       },
       {
         frame: 'lenna',
         visibleDepth: 1,
-        caption: 'Inside that domain, one contained ' + RANGE_SIZE + ' x ' + RANGE_SIZE + ' range block is highlighted together with its own best ' + DOMAIN_SIZE + ' x ' + DOMAIN_SIZE + ' domain block.'
+        caption: 'That domain block contains four smaller range blocks. We follow one of them; it has its own best-matching domain block.'
       },
       {
         frame: 'lenna',
         visibleDepth: 2,
-        caption: 'One more click follows that child block one level deeper, adding another range-to-domain dependency.'
+        caption: 'The same search repeats recursively. In the full image these dependencies eventually close into cycles, but we stop here to keep the picture simple.'
       },
       {
         frame: 'random',
         visibleDepth: 2,
-        caption: 'Now replace Lenna with a random seed image while keeping the same highlighted dependency chain.'
+        caption: 'For decompression, start from a random image and keep the same highlighted dependency chain in view.'
       },
       {
         frame: 'iter',
         visibleDepth: 2,
-        caption: 'Each iteration first animates the highlighted leaf-to-root block updates, then the full image advances. Repeating that several times shows the contraction toward the fixed point.'
+        caption: 'Now repeatedly apply the stored contraction to the whole image. Each step updates the image globally, while the highlighted maps show the local block updates driving the reconstruction.'
       }
     ];
 
@@ -817,7 +817,7 @@
     function updateChrome() {
       var stage = STAGES[stageIndex];
 
-      caption.textContent = stage.caption;
+      caption.textContent = stage.caption || '';
       stepStat.textContent = 'Step ' + (stageIndex + 1) + ' / ' + STAGES.length + iterationDisplay;
       nextButton.disabled = !ready || isAnimating || stageIndex >= STAGES.length - 1;
       resetButton.disabled = !ready || isAnimating;

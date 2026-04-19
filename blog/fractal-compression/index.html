@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fractal Compression - Janos Meny</title>
-    <meta name="description" content="An interactive write-up on fractal image compression with KaTeX-rendered math and a browser demo.">
+    <meta name="description" content="Fractal image compression, the contraction-mapping viewpoint behind it and an interactive explanation showing how to find contractions via range-domain blocks.">
     <link rel="stylesheet" href="../blog.css?v=20260419b">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
     <style>
@@ -207,6 +207,148 @@
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
+
+        .comparison-figure {
+            margin-top: 22px;
+        }
+
+        .hero p + p,
+        .hero figure {
+            margin-top: 14px;
+        }
+
+        .mandelbrot-figure img {
+            width: min(100%, 560px);
+            border-radius: 14px;
+        }
+
+        .comparison-chart {
+            width: min(100%, 760px);
+            display: block;
+            margin: 0 auto;
+            height: auto;
+            overflow: visible;
+            color: #222;
+            font-family: inherit;
+        }
+
+        .comparison-chart text {
+            font-family: inherit;
+        }
+
+        .comparison-chart .axis {
+            stroke: rgba(34, 34, 34, 0.55);
+            stroke-width: 1.25;
+        }
+
+        .comparison-chart .grid {
+            stroke: rgba(34, 34, 34, 0.1);
+            stroke-width: 1;
+        }
+
+        .comparison-chart .label {
+            fill: #222;
+            font-size: 15px;
+        }
+
+        .comparison-chart .label-muted {
+            fill: #555;
+            font-size: 13px;
+        }
+
+        .comparison-chart .series-main {
+            stroke: rgba(34, 34, 34, 0.68);
+            fill: none;
+            stroke-width: 2.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .comparison-chart .series-secondary {
+            stroke: rgba(34, 34, 34, 0.32);
+            fill: none;
+            stroke-width: 2.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .comparison-chart .point-main {
+            fill: rgba(34, 34, 34, 0.68);
+        }
+
+        .comparison-chart .point-secondary {
+            fill: rgba(34, 34, 34, 0.32);
+        }
+
+        .comparison-chart .text-main {
+            fill: rgba(34, 34, 34, 0.82);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .comparison-chart .text-secondary {
+            fill: rgba(34, 34, 34, 0.48);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .pseudo-code {
+            margin: 16px 0;
+            padding: 16px 18px;
+            border: 1px solid #dde5f0;
+            border-radius: 14px;
+            background: #f8fafc;
+            overflow-x: auto;
+            color: #2c3440;
+            font: 0.95rem/1.55 "SFMono-Regular", Menlo, Consolas, monospace;
+        }
+
+        .pseudo-code code {
+            font: inherit;
+            white-space: pre;
+        }
+
+        .pseudo-code .pc-kw {
+            color: #204f9a;
+            font-weight: 600;
+        }
+
+        .pseudo-code .pc-fn {
+            color: #0f766e;
+        }
+
+        .pseudo-code .pc-lit {
+            color: #7c3aed;
+        }
+
+        .pseudo-code .pc-note {
+            color: #7c2d12;
+        }
+
+        .footnote-ref {
+            font-size: 0.78em;
+            vertical-align: super;
+            line-height: 0;
+        }
+
+        .footnote-ref a {
+            text-decoration: none;
+        }
+
+        .footnotes {
+            margin: 0;
+            padding-left: 22px;
+            color: #475569;
+            font-size: 0.9rem;
+        }
+
+        .footnotes li + li {
+            margin-top: 8px;
+        }
+
+        .footnotes a {
+            color: #204f9a;
+        }
     </style>
     <script defer src="fractal.js"></script>
     <script defer src="walkthrough-data.js"></script>
@@ -226,36 +368,70 @@
         <header class="hero">
             <span class="eyebrow">Interactive post</span>
             <h1>Fractal Compression</h1>
-            <p class="dek">A fixed-point view of image compression, plus a browser demo that searches for domain and range block mappings and reconstructs the image by repeated iteration.</p>
-            <p class="meta">A self-contained interactive article in the site blog, with the full demo code living alongside the post.</p>
+            <p class="dek">Fractal image compression is a lossy image compression algorithm, and it is a particularly fun one to understand.</p>
+            <p class="dek">This post covers the intuition behind it, how the math works, a small visual demo, and a brief comparison to JPEG to give some context for why it is not widely used today.</p>
         </header>
 
         <article class="post-body">
             <section class="section-card">
-                <h2>Background</h2>
-                <p>For the math, it is easiest to think about a single intensity channel modeled as a vector \(x \in [0, 1]^n\) with \(n = H \times W\), and to write \(\mathcal{I} = [0, 1]^n\) for the image space. A transform \(f : \mathcal{I} \to \mathcal{I}\) is a contraction when \(|f(x) - f(y)| \leq k |x - y|\) for some \(k &lt; 1\). The <a href="https://en.wikipedia.org/wiki/Banach_fixed-point_theorem" target="_blank" rel="noopener noreferrer">Banach fixed-point theorem</a> then guarantees a unique fixed point \(x^* \in \mathcal{I}\) satisfying \(f(x^*) = x^*\).</p>
-                <p>Once a contraction is found, iterating it from any seed image converges back to the same fixed point:</p>
-                <p>$$x_{t + 1} = f(x_t), \qquad f(x^*) = x^*, \qquad \lim_{t \to \infty} x_t = x^*.$$</p>
-                <p>Fractal compression tries to find a contraction whose fixed point approximates the target image closely enough that storing the parameters of \(f\) is cheaper than storing the pixels directly. In the block-based variant used here, the smaller target patches are <em>range</em> blocks and the larger source patches are <em>domain</em> blocks. In the RGB demo below, the block geometry is chosen from luminance and then separate affine fits are stored for the red, green, and blue channels.</p>
+                <h2>Intuition</h2>
+                <p>Fractal compression tries to exploit self-similarities inside an image. Natural images often contain repeated structure: a smaller patch can look like a contracted version of a bigger patch somewhere else in the same image.</p>
+                <p>The basic idea is to store those relationships instead of storing explicit pixel values directly. Fractal compression tries to describe the image by a collection of rules that map larger source patches onto smaller target patches.</p>
+                <p>The Mandelbrot set is a classical example of a fractal that exhibits self-similarity.</p>
 
-                <figure class="figure-card">
-                    <img class="intro-diagram" src="grid_contraction.svg" alt="Block mapping from a domain block to a range block">
-                    <figcaption>The highlighted domain block is contracted onto a highlighted range block, which is the local building block of the global mapping.</figcaption>
+                <figure class="figure-card mandelbrot-figure">
+                    <img src="mandelbrot.png" alt="Rendering of the Mandelbrot set">
+                    <figcaption>The Mandelbrot set, a canonical example of an image with self-similarities.</figcaption>
                 </figure>
 
-                <p>The key idea is to search, for each range block, over many candidate domain blocks together with simple transformations. If every local mapping is contractive, the global system has a well-defined fixed point, and decompression becomes an iteration toward that fixed point rather than a direct pixel copy.</p>
+                <p>It turns out that many natural images also contain self-similarities, and fractal compression tries to exploit those to store the image in a more compressed way. More precisely, if we can find self-similarities that represent the image well, then they can be used to define a global transformation on image space whose fixed point is the original image.</p>
             </section>
 
             <section class="section-card">
+                <h2>Math Behind Fractal Compression</h2>
+                <p>I find it easiest to start with a conceptual picture of the algorithm before diving into the details. But if you are not interested in the math, you can skip directly to the <a href="#implementation">implementation section</a>.</p>
+                <p>For simplicity, we model an image as a single intensity channel vector \(x \in [0, 1]^n\) with \(n = H \times W\), and we write \(\mathcal{I} = [0, 1]^n\) for the image space. A key concept used in fractal compression is a <em>contraction</em>: a transform \(f : \mathcal{I} \to \mathcal{I}\) such that \(|f(x) - f(y)| \leq \lambda |x - y|\) for some \(\lambda &lt; 1\).</p>
+                <p>The key insight is that, by the <a href="https://en.wikipedia.org/wiki/Banach_fixed-point_theorem" target="_blank" rel="noopener noreferrer">Banach fixed-point theorem</a>, every contraction has a unique fixed point \(x^* \in \mathcal{I}\) satisfying \(f(x^*) = x^*\). Fractal compression exploits this by storing a contraction whose fixed point is the image, instead of storing the image directly.</p>
+                <p>The Banach fixed-point theorem gives us a little bit more than a unique fixed point: given a contraction \(f\), the following iteration scheme converges exponentially to that fixed point from any starting point:</p>
+                <p>$$x_{t + 1} = f(x_t)$$</p>
+                <p>$$|x_t - x^*| \leq \lambda^t |x_0 - x^*|.$$</p>
+                <p>Practically, this means that in fractal compression, once we have stored \(f\), we can start from any random point \(x_0\) and recover the fixed point \(x^*\) by iterating \(f\). Typically only a handful of iterations are required to obtain a good reconstruction of \(x^*\), thanks to the exponential convergence.</p>
+            </section>
+
+            <section class="section-card" id="implementation">
                 <h2>Implementation</h2>
-                <p>The compressor below works on \(512 \times 512\) RGB images with \(4 \times 4\) range blocks and \(8 \times 8\) domain blocks. For each range block, it inspects every candidate domain block, downsamples it, and evaluates the eight planar symmetries so that rotated and reflected variants are also available.</p>
-                <p>To keep compression practical, the search for the best domain block and symmetry is performed on luminance. Once that shared geometric mapping is chosen, the demo solves three tiny least-squares problems, one for each of the red, green, and blue channels, fitting a contrast \(c\) and offset \(d\) for each channel separately.</p>
-                <p>During decompression, the same domain-to-range geometry is applied to all three channels while the per-channel affine parameters restore color. Starting from random RGB noise, repeated application of the mapping converges toward the stored fixed point.</p>
-                <p>The dependency walkthrough above uses larger \(16 \times 16\) and \(32 \times 32\) blocks only for visualization, so the recursive structure is easier to see.</p>
+                <p>In practice, to find a contraction \(f\), we subdivide the image into smaller target patches called <em>range</em> blocks and larger source patches called <em>domain</em> blocks.</p>
+                <p>We do not actually find one single contraction all at once. Instead, for each range block we search over all domain blocks and find the local contraction that matches it best. Concretely, for every candidate domain block we downsample it, optionally apply a symmetry, and then fit an affine correction; whichever choice gives the best match becomes the local contraction for that range block. Those local contractions are the building blocks from which the global map \(f\) is assembled.</p>
+
+                <figure class="figure-card">
+                    <img class="intro-diagram" src="grid_contraction.svg" alt="Block mapping from a domain block to a range block">
+                    <figcaption>A blue domain block on the left is mapped onto a violet range block on the right.</figcaption>
+                </figure>
+
+                <p>The compressor below works on \(512 \times 512\) images with \(4 \times 4\) range blocks and \(8 \times 8\) domain blocks. For each range block, it searches over candidate domain blocks, downsamples them, and evaluates the eight planar symmetries so that rotated and reflected variants are also available.</p>
+<pre class="pseudo-code"><code>best_match = <span class="pc-lit">None</span>
+<span class="pc-kw">for each</span> domain block D:
+    D_small = <span class="pc-fn">downsample</span>(D)
+    <span class="pc-kw">for each</span> symmetry S:
+        candidate = <span class="pc-fn">apply_symmetry</span>(S, D_small)
+        (a, b) = <span class="pc-fn">fit_affine_parameters</span>(candidate, range_block)
+        error = <span class="pc-fn">L2_error</span>(a * candidate + b, range_block)
+        <span class="pc-note">keep the candidate with the smallest error</span></code></pre>
+                <p>In the RGB demo, the domain block and symmetry for each range block are chosen first on luminance. With that geometry fixed, the demo then fits separate affine corrections for the red, green, and blue channels. During decompression, the same geometry is applied to all three channels while the per-channel affine parameters restore color. Starting from random RGB noise, repeated application of the mapping converges toward the stored fixed point.</p>
+<pre class="pseudo-code"><code>x = <span class="pc-fn">random_image</span>()
+<span class="pc-kw">for</span> t <span class="pc-kw">in</span> <span class="pc-lit">1..T</span>:
+    x_next = <span class="pc-fn">empty_image</span>()
+    <span class="pc-kw">for each</span> range block R:
+        D = <span class="pc-fn">stored_domain_block</span>(R)
+        D_small = <span class="pc-fn">downsample</span>(<span class="pc-fn">extract_block</span>(x, D))
+        candidate = <span class="pc-fn">apply_stored_symmetry</span>(R, D_small)
+        <span class="pc-fn">write_range_block</span>(x_next, R, <span class="pc-fn">apply_stored_affine</span>(R, candidate))
+    x = x_next</code></pre>
+                <p>The animation below walks you through how fractal compression and decompression work visually.</p>
 
                 <div class="walkthrough-panel">
                     <div class="panel-header">
-                        <h3>Dependency Walkthrough</h3>
+                        <h3>Visual Walkthrough</h3>
                         <span id="walkthroughStep" class="stat-pill">Loading</span>
                     </div>
                     <div class="walkthrough-frame">
@@ -274,7 +450,7 @@
 
             <section class="section-card">
                 <h2>Demo</h2>
-                <p>Choose an image, compress it into an RGB block mapping, and then iterate the decompressor from random color noise.</p>
+                <p>The nicest way to understand an algorithm is usually to try it. Choose an image, compress it into an RGB block mapping, and then watch the decompressor recover it from random color noise.</p>
 
                 <div class="demo-grid">
                     <section class="tool-panel">
@@ -311,6 +487,68 @@
                 </div>
 
                 <canvas id="workCanvas" width="512" height="512"></canvas>
+            </section>
+
+            <section class="section-card" id="comparison-to-jpeg">
+                <h2>Comparison to JPEG</h2>
+                <p>Maybe you are wondering how fractal compression compares to JPEG, and why it is not widely used today. From what I found, the main reason seems to be that its reconstruction quality is generally not quite as good as JPEG at the same compression ratio.<sup class="footnote-ref"><a href="#fn-jpl" id="fnref-jpl">1</a></sup></p>
+
+                <figure class="figure-card comparison-figure">
+                    <svg class="comparison-chart" viewBox="0 0 760 320" role="img" aria-labelledby="rd-title rd-desc">
+                        <title id="rd-title">Compression ratio versus reconstructed quality</title>
+                        <desc id="rd-desc">A schematic plot with compression ratio on the horizontal axis and reconstructed quality on the vertical axis. The JPEG curve stays above the fractal curve across the range from about five to one up to about twenty to one.</desc>
+                        <line class="axis" x1="92" y1="34" x2="92" y2="252"></line>
+                        <line class="axis" x1="92" y1="252" x2="706" y2="252"></line>
+
+                        <line class="grid" x1="92" y1="60" x2="706" y2="60"></line>
+                        <line class="grid" x1="92" y1="124" x2="706" y2="124"></line>
+                        <line class="grid" x1="92" y1="188" x2="706" y2="188"></line>
+
+                        <text class="label" x="30" y="156" transform="rotate(-90 30 156)">PSNR (dB)</text>
+                        <text class="label" x="326" y="302">Compression ratio</text>
+                        <text class="label-muted" x="56" y="64">40</text>
+                        <text class="label-muted" x="56" y="128">35</text>
+                        <text class="label-muted" x="56" y="192">30</text>
+
+                        <line class="axis" x1="140" y1="252" x2="140" y2="258"></line>
+                        <line class="axis" x1="316" y1="252" x2="316" y2="258"></line>
+                        <line class="axis" x1="492" y1="252" x2="492" y2="258"></line>
+                        <line class="axis" x1="668" y1="252" x2="668" y2="258"></line>
+
+                        <text class="label" x="126" y="280">5:1</text>
+                        <text class="label" x="296" y="280">10:1</text>
+                        <text class="label" x="472" y="280">15:1</text>
+                        <text class="label" x="648" y="280">20:1</text>
+
+                        <polyline class="series-main" points="140,88 316,112 492,138 668,164"></polyline>
+                        <polyline class="series-secondary" points="140,138 316,156 492,170 668,182"></polyline>
+
+                        <circle class="point-main" cx="140" cy="88" r="4"></circle>
+                        <circle class="point-main" cx="316" cy="112" r="4"></circle>
+                        <circle class="point-main" cx="492" cy="138" r="4"></circle>
+                        <circle class="point-main" cx="668" cy="164" r="4"></circle>
+
+                        <circle class="point-secondary" cx="140" cy="138" r="4"></circle>
+                        <circle class="point-secondary" cx="316" cy="156" r="4"></circle>
+                        <circle class="point-secondary" cx="492" cy="170" r="4"></circle>
+                        <circle class="point-secondary" cx="668" cy="182" r="4"></circle>
+
+                        <text class="text-main" x="586" y="150">JPEG</text>
+                        <text class="text-secondary" x="586" y="202">Fractal</text>
+                    </svg>
+                    <figcaption>The JPL comparison shows that fractal compression generally has worse reconstruction quality than JPEG at a given compression ratio.<sup class="footnote-ref"><a href="#fn-jpl">1</a></sup></figcaption>
+                </figure>
+
+                <p>One other weak point of fractal compression is that running the encoder, that is, finding good fractal codes, is computationally very expensive.<sup class="footnote-ref"><a href="#fn-truong" id="fnref-truong">2</a></sup><sup class="footnote-ref"><a href="#fn-wang" id="fnref-wang">3</a></sup> I have not found a rigorous apples-to-apples comparison against JPEG, and I am not aware of a production-optimized fractal coding library that would make such a comparison fair. Since the encoder search is highly parallel, it would be interesting to see how a modern GPU-accelerated fractal codec would compare against existing highly optimized JPEG implementations.</p>
+            </section>
+
+            <section class="section-card">
+                <h2>Notes</h2>
+                <ol class="footnotes">
+                    <li id="fn-jpl">Cheung and Shahshahani, <em>A Comparison of the Fractal and JPEG Algorithms</em> (1991).</li>
+                    <li id="fn-truong">Truong et al., <em>Fast fractal image compression using spatial correlation</em> (2004).</li>
+                    <li id="fn-wang">Wang et al., <em>Fast sparse fractal image compression</em> (2017).</li>
+                </ol>
             </section>
         </article>
     </main>
