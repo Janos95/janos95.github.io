@@ -131,6 +131,47 @@ img {
     margin-bottom: 0;
 }
 
+.post-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.post-preview-link {
+    display: block;
+    flex: 0 0 192px;
+    width: 192px;
+    margin: 0;
+    border: 1px solid #d7dde6;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+}
+
+.post-preview-link:hover,
+.post-preview-link:focus-visible {
+    border-color: #b7c6df;
+}
+
+.post-preview-image {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.post-copy {
+    flex: 1 1 auto;
+}
+
+.post-copy h2 {
+    margin: 0 0 12px;
+}
+
+.post-copy p {
+    margin: 0;
+}
+
 .figure-card {
     margin: 18px 0;
     padding: 0;
@@ -174,8 +215,17 @@ img {
     padding: 0.3rem 0;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 560px) {
     .page-nav {
         justify-content: flex-end;
+    }
+
+    .post-entry {
+        display: block;
+    }
+
+    .post-preview-link {
+        width: min(100%, 360px);
+        margin: 0 0 16px;
     }
 }
