@@ -87,6 +87,29 @@
             box-shadow: 0 0 0 4px rgba(196, 67, 67, 0.12);
         }
 
+        .walkthrough-panel {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #dde5f0;
+            border-radius: 18px;
+            background: #fbfdff;
+        }
+
+        .walkthrough-frame {
+            margin-top: 14px;
+            padding: 18px;
+            border: 1px solid #dde5f0;
+            border-radius: 16px;
+            background: #f8fafc;
+        }
+
+        .walkthrough-viewport {
+            position: relative;
+            width: min(100%, 512px);
+            margin: 0 auto;
+            aspect-ratio: 1 / 1;
+        }
+
         .canvas-frame {
             display: flex;
             justify-content: center;
@@ -98,7 +121,8 @@
         }
 
         #originalPreview,
-        #decompressCanvas {
+        #decompressCanvas,
+        #walkthroughCanvas {
             display: block;
             width: min(100%, 320px);
             aspect-ratio: 1 / 1;
@@ -114,11 +138,37 @@
             object-fit: contain;
         }
 
+        #walkthroughCanvas {
+            width: 100%;
+            height: 100%;
+            opacity: 0.88;
+            filter: saturate(0.75) contrast(0.9) brightness(1.06);
+        }
+
+        #walkthroughOverlay {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: visible;
+        }
+
         .control-row {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             margin-top: 14px;
+        }
+
+        .walkthrough-controls {
+            justify-content: center;
+        }
+
+        .walkthrough-caption {
+            min-height: 3.2em;
+            margin: 14px 0 0;
+            color: #5b6778;
         }
 
         button,
@@ -159,6 +209,8 @@
         }
     </style>
     <script defer src="fractal.js"></script>
+    <script defer src="walkthrough-data.js"></script>
+    <script defer src="walkthrough.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/contrib/auto-render.min.js"></script>
 </head>
@@ -187,7 +239,7 @@
                 <p>Fractal compression tries to find a contraction whose fixed point approximates the target image closely enough that storing the parameters of \(f\) is cheaper than storing the pixels directly. In the block-based variant used here, the smaller target patches are <em>range</em> blocks and the larger source patches are <em>domain</em> blocks. In the RGB demo below, the block geometry is chosen from luminance and then separate affine fits are stored for the red, green, and blue channels.</p>
 
                 <figure class="figure-card">
-                    <img class="intro-diagram" src="grid_contraction.svg" alt="Block mapping from a coarse 2x2 domain to a fine 4x4 range">
+                    <img class="intro-diagram" src="grid_contraction.svg" alt="Block mapping from a domain block to a range block">
                     <figcaption>The highlighted domain block is contracted onto a highlighted range block, which is the local building block of the global mapping.</figcaption>
                 </figure>
 
@@ -196,9 +248,28 @@
 
             <section class="section-card">
                 <h2>Implementation</h2>
-                <p>This demo works on \(512 \times 512\) RGB images. For every \(4 \times 4\) range block, it inspects every candidate \(8 \times 8\) domain block, downsamples it, and evaluates the eight planar symmetries so that rotated and reflected variants are also available.</p>
+                <p>The compressor below works on \(512 \times 512\) RGB images with \(4 \times 4\) range blocks and \(8 \times 8\) domain blocks. For each range block, it inspects every candidate domain block, downsamples it, and evaluates the eight planar symmetries so that rotated and reflected variants are also available.</p>
                 <p>To keep compression practical, the search for the best domain block and symmetry is performed on luminance. Once that shared geometric mapping is chosen, the demo solves three tiny least-squares problems, one for each of the red, green, and blue channels, fitting a contrast \(c\) and offset \(d\) for each channel separately.</p>
                 <p>During decompression, the same domain-to-range geometry is applied to all three channels while the per-channel affine parameters restore color. Starting from random RGB noise, repeated application of the mapping converges toward the stored fixed point.</p>
+                <p>The dependency walkthrough above uses larger \(16 \times 16\) and \(32 \times 32\) blocks only for visualization, so the recursive structure is easier to see.</p>
+
+                <div class="walkthrough-panel">
+                    <div class="panel-header">
+                        <h3>Dependency Walkthrough</h3>
+                        <span id="walkthroughStep" class="stat-pill">Loading</span>
+                    </div>
+                    <div class="walkthrough-frame">
+                        <div class="walkthrough-viewport">
+                            <canvas id="walkthroughCanvas" width="512" height="512"></canvas>
+                            <svg id="walkthroughOverlay" viewBox="0 0 512 512" aria-hidden="true"></svg>
+                        </div>
+                    </div>
+                    <div class="control-row walkthrough-controls">
+                        <button id="walkthroughNext" type="button" disabled>Next</button>
+                        <button id="walkthroughReset" type="button" disabled>Reset</button>
+                    </div>
+                    <p id="walkthroughCaption" class="walkthrough-caption">Loading Lenna.</p>
+                </div>
             </section>
 
             <section class="section-card">
