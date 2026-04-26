@@ -10,6 +10,8 @@
     var fallbackReason = '';
     var activeThreads = 1;
     var reportedThreads = navigator.hardwareConcurrency || 0;
+    var tuneResults = [];
+    var wasmVersion = '20260426d';
 
     function setStatus(text) {
         if (status) {
@@ -42,7 +44,7 @@
     function getModule() {
         if (!modulePromise) {
             var useThreads = hasThreadSupport();
-            activeThreads = useThreads ? 6 : 1;
+            activeThreads = useThreads ? 0 : 1;
             activeMode = useThreads ? activeThreads + '-thread OpenMP' : 'single-thread';
             var factory = useThreads ? createProsperoOmpModule : createProsperoModule;
             var binary = useThreads ? window.PROSPERO_OMP_WASM_BASE64 : window.PROSPERO_WASM_BASE64;
@@ -56,6 +58,60 @@
             });
         }
         return modulePromise;
+    }
+
+    function cacheKey() {
+        return 'prospero-thread-count:' + wasmVersion + ':' + navigator.userAgent;
+    }
+
+    function readCachedThreads() {
+        try {
+            var value = Number(localStorage.getItem(cacheKey()));
+            return value === 4 || value === 6 || value === 8 ? value : 0;
+        } catch (error) {
+            return 0;
+        }
+    }
+
+    function writeCachedThreads(threads) {
+        try {
+            localStorage.setItem(cacheKey(), String(threads));
+        } catch (error) {}
+    }
+
+    function benchmarkThreads(module, threads, warmups, runs) {
+        module.ccall('prospero_set_threads', null, ['number'], [threads]);
+        return module.ccall('prospero_benchmark', 'number', ['number', 'number'], [warmups, runs]);
+    }
+
+    function tuneThreads(module) {
+        var cached = readCachedThreads();
+        if (cached) {
+            activeThreads = cached;
+            activeMode = activeThreads + '-thread OpenMP';
+            tuneResults = [];
+            return;
+        }
+
+        var candidates = [4, 6, 8];
+        var bestThreads = candidates[0];
+        var bestMean = Infinity;
+
+        tuneResults = [];
+        for (var i = 0; i < candidates.length; i++) {
+            var threads = candidates[i];
+            setStatus('Tuning ' + threads + ' threads...');
+            var mean = benchmarkThreads(module, threads, 2, 10);
+            tuneResults.push({ threads: threads, mean: mean });
+            if (mean < bestMean) {
+                bestMean = mean;
+                bestThreads = threads;
+            }
+        }
+
+        activeThreads = bestThreads;
+        activeMode = activeThreads + '-thread OpenMP';
+        writeCachedThreads(activeThreads);
     }
 
     function formatMs(value) {
@@ -128,10 +184,13 @@
                 loaded = true;
             }
 
-            if (activeThreads > 1) {
+            if (activeThreads === 0) {
+                tuneThreads(module);
+            } else if (activeThreads > 1) {
                 module.ccall('prospero_set_threads', null, ['number'], [activeThreads]);
             }
 
+            setStatus('Running benchmark...');
             var mean = module.ccall('prospero_benchmark', 'number', ['number', 'number'], [4, 24]);
             var std = module.ccall('prospero_std_ms', 'number', [], []);
             var min = module.ccall('prospero_min_ms', 'number', [], []);
@@ -143,6 +202,9 @@
 
             output.innerHTML = [
                 '<div><strong>Mode:</strong> ' + activeMode + (fallbackReason ? ' (' + fallbackReason + ')' : '') + '</div>',
+                '<div><strong>Tuning:</strong> ' + (tuneResults.length ? tuneResults.map(function (result) {
+                    return result.threads + 't ' + formatMs(result.mean);
+                }).join(', ') : 'cached') + '</div>',
                 '<div><strong>Mean:</strong> ' + formatMs(mean) + '</div>',
                 '<div><strong>Std dev:</strong> ' + formatMs(std) + '</div>',
                 '<div><strong>Min:</strong> ' + formatMs(min) + '</div>',
