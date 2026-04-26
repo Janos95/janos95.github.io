@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threading Check</title>
+    <style>
+        body {
+            margin: 20px;
+            color: #222;
+            background: #fff;
+            font: 16px/1.5 monospace;
+        }
+    </style>
+</head>
+<body>
+    <pre id="out"></pre>
+    <script>
+        document.querySelector('#out').textContent = [
+            'crossOriginIsolated: ' + window.crossOriginIsolated,
+            'SharedArrayBuffer: ' + (typeof SharedArrayBuffer !== 'undefined'),
+            'Worker: ' + (typeof Worker !== 'undefined')
+        ].join('\n');
+    </script>
+</body>
+</html>

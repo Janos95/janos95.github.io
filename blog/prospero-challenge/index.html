@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prospero Challenge - Janos Meny</title>
+    <meta name="description" content="A short introduction to the Prospero Challenge and notes on rendering a large expression quickly.">
+    <link rel="stylesheet" href="../blog.css?v=20260425b">
+    <script>
+        (function () {
+            if (window.crossOriginIsolated || !('serviceWorker' in navigator)) {
+                return;
+            }
+
+            navigator.serviceWorker.register('coi-serviceworker.js').then(function () {
+                if (!navigator.serviceWorker.controller) {
+                    window.location.reload();
+                }
+            }).catch(function () {});
+        }());
+    </script>
+    <style>
+        .post-body a {
+            color: #204f9a;
+        }
+
+        .benchmark-panel {
+            margin: 20px 0;
+            padding: 16px;
+            border: 1px solid #d7dde6;
+            background: #ffffff;
+        }
+
+        .benchmark-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .benchmark-button {
+            padding: 8px 14px;
+            border: 1px solid #b7c6df;
+            border-radius: 4px;
+            background: #f8fbff;
+            color: #204f9a;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .benchmark-button:disabled {
+            cursor: wait;
+            opacity: 0.68;
+        }
+
+        .benchmark-status {
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .benchmark-canvas-wrap {
+            margin-top: 14px;
+            width: min(100%, 384px);
+            background: #000000;
+            border: 1px solid #d7dde6;
+        }
+
+        .benchmark-canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            image-rendering: pixelated;
+        }
+
+        .benchmark-output {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 8px 16px;
+            margin-top: 14px;
+            color: #333;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+    <main class="page-shell">
+        <nav class="page-nav" aria-label="Primary">
+            <div class="nav-group">
+                <a class="nav-link" href="../../index.html">Home</a>
+                <a class="nav-link active" href="../index.html">Blog</a>
+            </div>
+        </nav>
+
+        <header class="hero">
+            <h1>Prospero Challenge</h1>
+        </header>
+
+        <article class="post-body">
+            <section class="section-card">
+                <p><a href="https://www.mattkeeter.com/projects/prospero/" target="_blank" rel="noopener noreferrer">The Prospero Challenge</a> is a small but surprisingly rich rendering benchmark from Matt Keeter. The input is a plain-text program containing thousands of mathematical expressions. Evaluate it over the square <code>[-1, 1] x [-1, 1]</code>, color each pixel by the sign of the result, and it produces an image of text from <em>The Tempest</em>.</p>
+
+                <p>The challenge is to render that image as quickly as possible. A direct NumPy implementation is short and readable, but it spends a lot of time and memory on intermediate arrays. That makes Prospero a nice playground for compiler ideas, interval arithmetic, expression simplification, parallel evaluation, SIMD, GPU execution, and the tradeoff between startup cost and steady-state frame time.</p>
+
+                <div class="benchmark-panel" aria-label="Prospero WASM benchmark">
+                    <div class="benchmark-toolbar">
+                        <button class="benchmark-button" type="button" data-prospero-run>Run benchmark</button>
+                        <button class="benchmark-button" type="button" data-prospero-reset>Reset</button>
+                        <span class="benchmark-status" data-prospero-status>Runs the 1024x1024 Prospero renderer in WebAssembly.</span>
+                    </div>
+                    <div class="benchmark-canvas-wrap">
+                        <canvas class="benchmark-canvas" width="1024" height="1024" data-prospero-canvas aria-label="Prospero renderer output"></canvas>
+                    </div>
+                    <div class="benchmark-output" data-prospero-output></div>
+                </div>
+
+                <p>This post will collect my notes on the challenge and the implementation details I found most interesting.</p>
+            </section>
+        </article>
+
+        <footer class="post-views" aria-label="Post views">
+            Views: <span id="post-view-count" class="post-views-count"></span>
+        </footer>
+
+    </main>
+    <script>
+        (function () {
+            var target = document.querySelector('#post-view-count');
+            if (!target) {
+                return;
+            }
+
+            fetch('https://janos.goatcounter.com/counter/' + encodeURIComponent(window.location.pathname) + '.json')
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Counter request failed');
+                    }
+                    return response.json();
+                })
+                .then(function (data) {
+                    var count = Number(data.count);
+                    if (Number.isFinite(count)) {
+                        target.textContent = count.toLocaleString();
+                    }
+                })
+                .catch(function () {
+                    target.textContent = '';
+                });
+        })();
+    </script>
+    <script src="wasm/prospero-data.js"></script>
+    <script src="wasm/prospero-binary.js"></script>
+    <script src="wasm/prospero.js"></script>
+    <script src="wasm-omp/prospero-binary.js"></script>
+    <script src="wasm-omp/prospero.js"></script>
+    <script src="wasm/runner.js"></script>
+    <script data-goatcounter="https://janos.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
