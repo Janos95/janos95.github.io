@@ -42,7 +42,7 @@
     function getModule() {
         if (!modulePromise) {
             var useThreads = hasThreadSupport();
-            activeThreads = useThreads ? 8 : 1;
+            activeThreads = useThreads ? 6 : 1;
             activeMode = useThreads ? activeThreads + '-thread OpenMP' : 'single-thread';
             var factory = useThreads ? createProsperoOmpModule : createProsperoModule;
             var binary = useThreads ? window.PROSPERO_OMP_WASM_BASE64 : window.PROSPERO_WASM_BASE64;
