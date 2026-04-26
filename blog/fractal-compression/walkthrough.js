@@ -20,7 +20,7 @@
     var offscreenCtx;
     var patchCanvas;
     var patchCtx;
-    var lennaPixels = null;
+    var sourcePixels = null;
     var randomPixels = null;
     var fullMapping = null;
     var iterationFrames = [];
@@ -50,26 +50,26 @@
     var ITERATION_GAP_MS = Math.round(120 * STEP6_TIME_SCALE);
     var STAGES = [
       {
-        frame: 'lenna',
+        frame: 'source',
         rootOnly: true,
         showDomain: false,
         visibleDepth: 0,
         caption: 'For compression, start with one range block, shown in orange.'
       },
       {
-        frame: 'lenna',
+        frame: 'source',
         rootOnly: true,
         showDomain: true,
         visibleDepth: 0,
         caption: 'We search over all domain blocks and keep the one whose contracted copy best matches the chosen range block.'
       },
       {
-        frame: 'lenna',
+        frame: 'source',
         visibleDepth: 1,
         caption: 'That domain block contains four smaller range blocks. We follow one of them; it has its own best-matching domain block.'
       },
       {
-        frame: 'lenna',
+        frame: 'source',
         visibleDepth: 2,
         caption: 'The same search repeats recursively. In the full image these dependencies eventually close into cycles, but we stop here to keep the picture simple.'
       },
@@ -292,7 +292,7 @@
       return image;
     }
 
-    function loadLennaImage() {
+    function loadSourceImage() {
       return new Promise(function (resolve, reject) {
         var img = new Image();
 
@@ -306,7 +306,7 @@
     }
 
     function loadPrecomputedMapping() {
-      return global.fetch('walkthrough-mapping.json').then(function (response) {
+      return global.fetch('walkthrough-mapping.json?v=20260425c').then(function (response) {
         if (!response.ok) {
           throw new Error('Missing walkthrough-mapping.json.');
         }
@@ -516,8 +516,8 @@
     }
 
     function getFrame(stage) {
-      if (stage.frame === 'lenna') {
-        return lennaPixels;
+      if (stage.frame === 'source') {
+        return sourcePixels;
       }
       if (stage.frame === 'random') {
         return randomPixels;
@@ -937,7 +937,7 @@
     function initializeWalkthrough() {
       branchNodes = getBranchNodes();
 
-      return Promise.all([loadLennaImage(), loadPrecomputedMapping()]).then(function (results) {
+      return Promise.all([loadSourceImage(), loadPrecomputedMapping()]).then(function (results) {
         var img = results[0];
         var mappingObject = results[1];
 
@@ -946,7 +946,7 @@
           return;
         }
 
-        lennaPixels = extractRgbPixelsFromImage(img);
+        sourcePixels = extractRgbPixelsFromImage(img);
         fullMapping = global.FractalCodec.pairsFromObject(mappingObject);
 
         randomPixels = createNoiseImage(1337);
@@ -956,7 +956,7 @@
         renderCurrentStage();
       }).catch(function (error) {
         console.error(error);
-        setUnavailable(error && error.message ? error.message : 'Could not load Lenna.');
+        setUnavailable(error && error.message ? error.message : 'Could not load source image.');
       });
     }
 

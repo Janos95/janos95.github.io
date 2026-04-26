@@ -10,7 +10,7 @@ const repoRoot = path.resolve(__dirname, '..');
 const codec = require(path.join(repoRoot, 'blog/fractal-compression/fractal.js'));
 
 const inputPath = path.resolve(
-  process.argv[2] || path.join(repoRoot, 'blog/fractal-compression/lenna.png')
+  process.argv[2] || path.join(repoRoot, 'blog/fractal-compression/peppers.png')
 );
 const outputPath = path.resolve(
   process.argv[3] || path.join(repoRoot, 'blog/fractal-compression/walkthrough-mapping.json')
