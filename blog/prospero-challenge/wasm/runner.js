@@ -9,6 +9,7 @@
     var activeMode = 'single-thread';
     var fallbackReason = '';
     var activeThreads = 1;
+    var reportedThreads = navigator.hardwareConcurrency || 0;
 
     function setStatus(text) {
         if (status) {
@@ -41,7 +42,7 @@
     function getModule() {
         if (!modulePromise) {
             var useThreads = hasThreadSupport();
-            activeThreads = useThreads ? Math.max(1, Math.min(8, navigator.hardwareConcurrency || 8)) : 1;
+            activeThreads = useThreads ? 8 : 1;
             activeMode = useThreads ? activeThreads + '-thread OpenMP' : 'single-thread';
             var factory = useThreads ? createProsperoOmpModule : createProsperoModule;
             var binary = useThreads ? window.PROSPERO_OMP_WASM_BASE64 : window.PROSPERO_WASM_BASE64;
@@ -148,6 +149,7 @@
                 '<div><strong>Max:</strong> ' + formatMs(max) + '</div>',
                 '<div><strong>Instructions:</strong> ' + instructions.toLocaleString() + '</div>',
                 '<div><strong>Frontier terms:</strong> ' + frontier.toLocaleString() + '</div>',
+                '<div><strong>Browser cores:</strong> ' + (reportedThreads || 'unknown') + '</div>',
                 '<div><strong>Checksum:</strong> ' + checksum.toLocaleString() + '</div>'
             ].join('');
             setStatus('Benchmark complete.');
