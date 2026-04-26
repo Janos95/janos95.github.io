@@ -131,6 +131,18 @@ img {
     margin-bottom: 0;
 }
 
+.post-views {
+    margin: 36px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid #d7dde6;
+    color: #667085;
+    font-size: 0.92rem;
+}
+
+.post-views-count {
+    color: #333;
+}
+
 .post-entry {
     --post-preview-width: clamp(112px, 30vw, 192px);
     display: grid;

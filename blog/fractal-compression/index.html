@@ -551,6 +551,10 @@
                 </ol>
             </section>
         </article>
+
+        <footer class="post-views" aria-label="Post views">
+            Views: <span id="post-view-count" class="post-views-count"></span>
+        </footer>
     </main>
 
     <script>
@@ -775,5 +779,34 @@
             setCompressIndicator('');
         });
     </script>
+    <script>
+        (function () {
+            var attempts = 0;
+
+            function showVisitCount() {
+                if (window.goatcounter && window.goatcounter.visit_count) {
+                    var target = document.querySelector('#post-view-count');
+                    if (target) {
+                        target.textContent = '';
+                    }
+                    window.goatcounter.visit_count({ append: '#post-view-count' });
+                    return true;
+                }
+
+                return false;
+            }
+
+            if (!showVisitCount()) {
+                var timer = window.setInterval(function () {
+                    attempts += 1;
+                    if (showVisitCount() || attempts > 100) {
+                        window.clearInterval(timer);
+                    }
+                }, 100);
+            }
+        })();
+    </script>
+    <script data-goatcounter="https://janos.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
