@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+    <title id="title">Frontier model profit sketch</title>
+    <desc id="desc">A simple chart showing a fading frontier lead and a steadier integrated product margin.</desc>
+    <rect width="640" height="420" fill="#f8fafc"/>
+    <rect x="58" y="52" width="524" height="300" rx="16" fill="#ffffff" stroke="#d7dde6"/>
+    <line x1="112" y1="300" x2="530" y2="300" stroke="#334155" stroke-width="2"/>
+    <line x1="112" y1="300" x2="112" y2="94" stroke="#334155" stroke-width="2"/>
+    <path d="M126 122 C188 116 214 152 252 174 C305 205 352 220 420 252 C462 272 498 284 524 291" fill="none" stroke="#df6b57" stroke-width="8" stroke-linecap="round"/>
+    <path d="M126 264 C188 250 236 230 286 206 C345 178 410 160 524 154" fill="none" stroke="#2f8f57" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="126" cy="122" r="8" fill="#df6b57"/>
+    <circle cx="524" cy="154" r="8" fill="#2f8f57"/>
+    <text x="112" y="338" fill="#475569" font-family="Arial, sans-serif" font-size="20">time</text>
+    <text x="74" y="108" fill="#475569" font-family="Arial, sans-serif" font-size="20" transform="rotate(-90 74 108)">margin</text>
+    <text x="210" y="96" fill="#222222" font-family="Arial, sans-serif" font-size="25" font-weight="700">Can frontier AI labs</text>
+    <text x="235" y="128" fill="#222222" font-family="Arial, sans-serif" font-size="25" font-weight="700">make money?</text>
+    <text x="338" y="260" fill="#7f3328" font-family="Arial, sans-serif" font-size="18" font-weight="700">model lead</text>
+    <text x="332" y="150" fill="#1f6b42" font-family="Arial, sans-serif" font-size="18" font-weight="700">sticky work</text>
+    <text x="112" y="382" fill="#64748b" font-family="Arial, sans-serif" font-size="18">profit starts when capability becomes workflow</text>
+</svg>
