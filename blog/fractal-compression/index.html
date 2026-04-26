@@ -781,29 +781,27 @@
     </script>
     <script>
         (function () {
-            var attempts = 0;
-
-            function showVisitCount() {
-                if (window.goatcounter && window.goatcounter.visit_count) {
-                    var target = document.querySelector('#post-view-count');
-                    if (target) {
-                        target.textContent = '';
-                    }
-                    window.goatcounter.visit_count({ append: '#post-view-count' });
-                    return true;
-                }
-
-                return false;
+            var target = document.querySelector('#post-view-count');
+            if (!target) {
+                return;
             }
 
-            if (!showVisitCount()) {
-                var timer = window.setInterval(function () {
-                    attempts += 1;
-                    if (showVisitCount() || attempts > 100) {
-                        window.clearInterval(timer);
+            fetch('https://janos.goatcounter.com/counter/' + encodeURIComponent(window.location.pathname) + '.json')
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Counter request failed');
                     }
-                }, 100);
-            }
+                    return response.json();
+                })
+                .then(function (data) {
+                    var count = Number(data.count);
+                    if (Number.isFinite(count)) {
+                        target.textContent = count.toLocaleString();
+                    }
+                })
+                .catch(function () {
+                    target.textContent = '';
+                });
         })();
     </script>
     <script data-goatcounter="https://janos.goatcounter.com/count"
