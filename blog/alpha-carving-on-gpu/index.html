@@ -35,6 +35,11 @@
             margin-top: 12px;
         }
 
+        .demo-note {
+            margin: 2px 0 0;
+            color: #555;
+        }
+
         .demo-control {
             display: grid;
             gap: 4px;
@@ -72,6 +77,17 @@
             accent-color: var(--link-color);
         }
 
+        .custom-tools {
+            display: flex;
+            grid-column: 1 / -1;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 12px;
+            margin-top: 4px;
+            color: #667085;
+            font-size: 0.92rem;
+        }
+
         .demo-stage {
             position: relative;
             display: flex;
@@ -84,6 +100,17 @@
             width: min(100%, 640px);
             height: auto;
             aspect-ratio: 1 / 1;
+            cursor: crosshair;
+        }
+
+        #editOverlay {
+            position: absolute;
+            inset: 0;
+            width: min(100%, 640px);
+            height: auto;
+            aspect-ratio: 1 / 1;
+            margin: 0 auto;
+            pointer-events: none;
         }
 
         .unsupported {
@@ -146,13 +173,13 @@
 
         <article class="post-body">
             <section class="section-card">
-                <p>Alpha carving removes all points that can be swept out by a disk of radius <code>alpha</code>. A point is carved if some such disk covers it and the disk center can be moved in from the boundary without the disk colliding with the segment mesh. Blue is the alpha-carved reachable region; red marks pockets that the disk cannot reach.</p>
+                <p>Alpha carving removes all points that can be swept out by a disk of radius <code>alpha</code>. A point is carved if some such disk covers it and the disk center can be moved in from the boundary without the disk colliding with the segment mesh.</p>
 
                 <p>The 3D analogue is like carving with an ice cream scoop: a radius-<code>alpha</code> ball can remove whatever volume it can reach from outside without intersecting the input. For a production 3D version, see <a href="https://doc.cgal.org/latest/Alpha_wrap_3/index.html" target="_blank" rel="noopener noreferrer">CGAL&rsquo;s 3D Alpha Wrapping</a>, which shrink-wraps triangle soups or meshes into watertight surface meshes using alpha and offset parameters.</p>
 
                 <figure class="figure-card">
                     <img class="alpha-preview" src="preview.gif?v=1" alt="Animated preview of alpha carving on scattered line segments">
-                    <figcaption>Alpha decreases from 0.3 to 0 on the scattered segment field.</figcaption>
+                    <figcaption>Alpha decreases from 0.3 to 0 on the scattered segment field. Blue is the alpha-carved reachable region; red marks pockets that the disk cannot reach.</figcaption>
                 </figure>
             </section>
 
@@ -170,6 +197,7 @@
 
             <section class="section-card alpha-demo">
                 <h2>Interactive Demo</h2>
+                <p class="demo-note">Click pairs of points on the canvas to add segments, then use the alpha slider to change the carving radius.</p>
                 <div class="demo-controls" aria-label="Alpha carving controls">
                     <label class="demo-control">
                         <span>Drawing</span>
@@ -187,6 +215,10 @@
                         </select>
                     </label>
 
+                    <div id="customTools" class="custom-tools">
+                        <button class="blog-button secondary" id="clearCustom" type="button">Clear</button>
+                    </div>
+
                     <label class="demo-control alpha-control">
                         <span>Alpha <output id="alphaValue">0.080</output></span>
                         <input id="alphaSlider" type="range" min="0" max="0.38" step="0.001" value="0.08">
@@ -195,6 +227,7 @@
 
                 <div class="demo-stage">
                     <canvas id="gpuCanvas" width="1024" height="1024" aria-label="Alpha carved space"></canvas>
+                    <canvas id="editOverlay" width="1024" height="1024" aria-hidden="true"></canvas>
                     <div id="unsupported" class="unsupported" hidden>
                         WebGPU is not available in this browser.
                     </div>
@@ -212,7 +245,7 @@
         </footer>
     </main>
 
-    <script type="module" src="app.js?v=1"></script>
+    <script type="module" src="app.js?v=11"></script>
     <script>
         (function () {
             var target = document.querySelector('#post-view-count');

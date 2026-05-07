@@ -14,11 +14,13 @@ const PARAM_BYTES = 48;
 
 const els = {
   canvas: document.getElementById("gpuCanvas"),
+  overlay: document.getElementById("editOverlay"),
   unsupported: document.getElementById("unsupported"),
   meshSelect: document.getElementById("meshSelect"),
   resolutionSelect: document.getElementById("resolutionSelect"),
   alphaSlider: document.getElementById("alphaSlider"),
   alphaValue: document.getElementById("alphaValue"),
+  clearCustom: document.getElementById("clearCustom"),
   gpuText: document.getElementById("gpuText"),
   segmentText: document.getElementById("segmentText"),
 };
@@ -1075,6 +1077,41 @@ function resizeCanvas(context, device, format) {
   return false;
 }
 
+function resizeEditOverlay() {
+  if (!els.overlay) return false;
+
+  const rect = els.canvas.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const width = Math.max(1, Math.floor(rect.width * dpr));
+  const height = Math.max(1, Math.floor(rect.height * dpr));
+
+  if (els.overlay.width !== width || els.overlay.height !== height) {
+    els.overlay.width = width;
+    els.overlay.height = height;
+    return true;
+  }
+  return false;
+}
+
+function screenToWorld(event) {
+  const rect = els.canvas.getBoundingClientRect();
+  const u = (event.clientX - rect.left) / rect.width;
+  const v = (event.clientY - rect.top) / rect.height;
+
+  return {
+    x: Math.max(-1, Math.min(1, 2 * u - 1)),
+    y: Math.max(-1, Math.min(1, 2 * v - 1)),
+  };
+}
+
+function worldToScreen(point) {
+  const rect = els.canvas.getBoundingClientRect();
+  return {
+    x: ((point.x + 1) * 0.5) * rect.width,
+    y: ((point.y + 1) * 0.5) * rect.height,
+  };
+}
+
 async function loadDrawing(file) {
   const response = await fetch(`./${file}?t=${Date.now()}`);
   if (!response.ok) {
@@ -1113,11 +1150,113 @@ async function main() {
   const carver = new AlphaCarver(device, context, format);
   window.carver = carver;
 
+  let currentMesh = null;
+  const customState = {
+    using: false,
+    pending: null,
+    hover: null,
+    segments: [],
+  };
+
+  function cloneSegments(segments) {
+    return segments.map((segment) => [...segment]);
+  }
+
+  function customVertices() {
+    const vertices = [];
+    for (const segment of customState.segments) {
+      vertices.push([segment[0], segment[1]], [segment[2], segment[3]]);
+    }
+    if (customState.pending) {
+      vertices.push([customState.pending.x, customState.pending.y]);
+    }
+    return vertices;
+  }
+
+  function customMesh() {
+    return {
+      verts: customVertices(),
+      segments: customState.segments.map((segment) => [...segment]),
+    };
+  }
+
+  function updateCustomButtons() {
+    const hasSegments = currentMesh && currentMesh.segments.length > 0;
+    els.clearCustom.disabled = !customState.pending && !hasSegments;
+  }
+
+  function drawOverlay() {
+    resizeEditOverlay();
+    const overlay = els.overlay;
+    const ctx = overlay.getContext("2d");
+    const rect = els.canvas.getBoundingClientRect();
+    const scale = overlay.width / Math.max(rect.width, 1);
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+    if (!customState.pending) {
+      return;
+    }
+
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
+
+    const pending = worldToScreen(customState.pending);
+    ctx.fillStyle = "#2f6fba";
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(pending.x, pending.y, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    if (customState.hover) {
+      const hover = worldToScreen(customState.hover);
+      ctx.save();
+      ctx.setLineDash([6, 5]);
+      ctx.strokeStyle = "#2f6fba";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(pending.x, pending.y);
+      ctx.lineTo(hover.x, hover.y);
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  function updateCustomMesh() {
+    customState.using = true;
+    const mesh = customMesh();
+    currentMesh = mesh;
+    carver.setMesh(mesh);
+    els.segmentText.textContent = String(customState.segments.length);
+    updateCustomButtons();
+    drawOverlay();
+  }
+
+  function beginCustomDrawing() {
+    if (!customState.using) {
+      customState.segments = currentMesh ? cloneSegments(currentMesh.segments) : [];
+      customState.using = true;
+    }
+  }
+
   async function applyMeshSelection() {
     const file = els.meshSelect.value;
+    if (!file) {
+      return;
+    }
+
+    customState.pending = null;
+    customState.hover = null;
+    customState.using = false;
+    customState.segments = [];
     const mesh = await loadDrawing(file);
+    currentMesh = mesh;
     carver.setMesh(mesh);
     els.segmentText.textContent = String(mesh.segments.length);
+    updateCustomButtons();
+    drawOverlay();
   }
 
   els.alphaSlider.addEventListener("input", () => {
@@ -1132,12 +1271,53 @@ async function main() {
     });
   });
 
+  els.canvas.addEventListener("click", (event) => {
+    beginCustomDrawing();
+
+    const point = screenToWorld(event);
+    if (!customState.pending) {
+      customState.pending = point;
+      updateCustomButtons();
+      drawOverlay();
+      return;
+    }
+
+    const start = customState.pending;
+    if (Math.hypot(point.x - start.x, point.y - start.y) > 1e-4) {
+      customState.segments.push([start.x, start.y, point.x, point.y]);
+    }
+    customState.pending = null;
+    customState.hover = null;
+    updateCustomMesh();
+  });
+
+  els.canvas.addEventListener("mousemove", (event) => {
+    if (!customState.pending) return;
+    customState.hover = screenToWorld(event);
+    drawOverlay();
+  });
+
+  els.canvas.addEventListener("mouseleave", () => {
+    customState.hover = null;
+    drawOverlay();
+  });
+
+  els.clearCustom.addEventListener("click", () => {
+    customState.pending = null;
+    customState.hover = null;
+    customState.segments = [];
+    updateCustomMesh();
+  });
+
   els.resolutionSelect.addEventListener("change", () => {
     const size = Number(els.resolutionSelect.value);
     carver.setResolution(size);
   });
 
-  window.addEventListener("resize", () => resizeCanvas(context, device, format));
+  window.addEventListener("resize", () => {
+    resizeCanvas(context, device, format);
+    drawOverlay();
+  });
 
   device.lost.then((info) => {
     console.error(`GPU device lost: ${info.message || info.reason}`);
@@ -1147,6 +1327,9 @@ async function main() {
     try {
       if (resizeCanvas(context, device, format)) {
         carver.renderDirty = true;
+        drawOverlay();
+      } else if (resizeEditOverlay()) {
+        drawOverlay();
       }
       if (carver.dirty && !carver.busy) {
         carver.updateAlphaOnGpu();
