@@ -7,6 +7,7 @@ const DRAWINGS = [
   { file: "drawing_05.txt", name: "Bent polyline" },
 ];
 
+const RESOLUTIONS = [512, 1024, 2048];
 const INVALID = 0xffffffff;
 const WORKGROUP_2D = 16;
 const WORKGROUP_1D = 256;
@@ -16,8 +17,8 @@ const els = {
   canvas: document.getElementById("gpuCanvas"),
   overlay: document.getElementById("editOverlay"),
   unsupported: document.getElementById("unsupported"),
-  meshSelect: document.getElementById("meshSelect"),
-  resolutionSelect: document.getElementById("resolutionSelect"),
+  meshControls: document.getElementById("meshControls"),
+  resolutionControls: document.getElementById("resolutionControls"),
   alphaSlider: document.getElementById("alphaSlider"),
   alphaValue: document.getElementById("alphaValue"),
   clearCustom: document.getElementById("clearCustom"),
@@ -25,11 +26,37 @@ const els = {
   segmentText: document.getElementById("segmentText"),
 };
 
+let selectedDrawingFile = DRAWINGS[0].file;
+let selectedResolution = 1024;
+
 for (const drawing of DRAWINGS) {
-  const option = document.createElement("option");
-  option.value = drawing.file;
-  option.textContent = drawing.name;
-  els.meshSelect.append(option);
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "option-button";
+  button.dataset.file = drawing.file;
+  button.textContent = drawing.name;
+  els.meshControls.append(button);
+}
+
+for (const size of RESOLUTIONS) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "option-button";
+  button.dataset.size = String(size);
+  button.textContent = String(size);
+  els.resolutionControls.append(button);
+}
+
+setActiveOption(els.meshControls, "file", selectedDrawingFile);
+setActiveOption(els.resolutionControls, "size", selectedResolution);
+
+function setActiveOption(container, dataKey, value) {
+  const selectedValue = String(value);
+  for (const button of container.querySelectorAll(".option-button")) {
+    const active = button.dataset[dataKey] === selectedValue;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
+  }
 }
 
 function parseDrawing(text) {
@@ -106,8 +133,8 @@ class AlphaCarver {
     this.context = context;
     this.format = format;
     this.alpha = Number(els.alphaSlider.value);
-    this.width = 1024;
-    this.height = 1024;
+    this.width = selectedResolution;
+    this.height = selectedResolution;
     this.mesh = null;
     this.resources = null;
     this.busy = false;
@@ -1060,9 +1087,7 @@ fn fs(in: VSOut) -> @location(0) vec4<f32> {
 }
 
 function resizeCanvas(context, device, format) {
-  const rect = els.canvas.getBoundingClientRect();
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const size = Math.max(320, Math.floor(Math.min(rect.width, rect.height) * dpr));
+  const size = selectedResolution;
 
   if (els.canvas.width !== size || els.canvas.height !== size) {
     els.canvas.width = size;
@@ -1242,7 +1267,7 @@ async function main() {
   }
 
   async function applyMeshSelection() {
-    const file = els.meshSelect.value;
+    const file = selectedDrawingFile;
     if (!file) {
       return;
     }
@@ -1265,10 +1290,24 @@ async function main() {
     carver.setAlpha(alpha);
   });
 
-  els.meshSelect.addEventListener("change", () => {
+  els.meshControls.addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-file]");
+    if (!button) return;
+
+    selectedDrawingFile = button.dataset.file;
+    setActiveOption(els.meshControls, "file", selectedDrawingFile);
     applyMeshSelection().catch((error) => {
       console.error(error);
     });
+  });
+
+  els.resolutionControls.addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-size]");
+    if (!button) return;
+
+    selectedResolution = Number(button.dataset.size);
+    setActiveOption(els.resolutionControls, "size", selectedResolution);
+    carver.setResolution(selectedResolution);
   });
 
   els.canvas.addEventListener("click", (event) => {
@@ -1307,11 +1346,6 @@ async function main() {
     customState.hover = null;
     customState.segments = [];
     updateCustomMesh();
-  });
-
-  els.resolutionSelect.addEventListener("change", () => {
-    const size = Number(els.resolutionSelect.value);
-    carver.setResolution(size);
   });
 
   window.addEventListener("resize", () => {

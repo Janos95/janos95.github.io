@@ -52,29 +52,69 @@
             grid-column: 1 / -1;
         }
 
+        .demo-control.drawing-control {
+            grid-column: 1 / -1;
+        }
+
+        .demo-control.resolution-control {
+            grid-column: 1 / -1;
+        }
+
         .demo-control span {
             display: flex;
             justify-content: space-between;
             gap: 12px;
         }
 
-        .demo-control select,
         .demo-control input[type="range"] {
             width: 100%;
             font: inherit;
-        }
-
-        .demo-control select {
-            min-height: 34px;
-            padding: 4px 8px;
-            border: 1px solid #d7dde6;
-            border-radius: 4px;
-            background: #f8fafc;
-            color: #222;
-        }
-
-        .demo-control input[type="range"] {
             accent-color: var(--link-color);
+        }
+
+        .option-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .option-button {
+            min-height: 32px;
+            padding: 6px 10px;
+            border: 1px solid #d7dde6;
+            border-radius: 6px;
+            background: #f8fafc;
+            color: #344054;
+            font: inherit;
+            font-weight: 600;
+            line-height: 1.2;
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+        }
+
+        .option-button:hover,
+        .option-button:focus-visible {
+            border-color: var(--link-border-color);
+            background: #f3f8ff;
+            color: var(--link-color-hover);
+        }
+
+        .option-button.active {
+            border-color: var(--link-border-color);
+            background: var(--link-background-color);
+            color: var(--link-color-hover);
+        }
+
+        .drawing-options .option-button {
+            flex: 1 1 220px;
+            text-align: left;
+        }
+
+        .resolution-options .option-button {
+            flex: 1 1 118px;
+            text-align: center;
         }
 
         .custom-tools {
@@ -199,21 +239,15 @@
                 <h2>Interactive Demo</h2>
                 <p class="demo-note">Click pairs of points on the canvas to add segments, then use the alpha slider to change the carving radius.</p>
                 <div class="demo-controls" aria-label="Alpha carving controls">
-                    <label class="demo-control">
+                    <div class="demo-control drawing-control">
                         <span>Drawing</span>
-                        <select id="meshSelect"></select>
-                    </label>
+                        <div class="option-group drawing-options" id="meshControls" role="group" aria-label="Drawing"></div>
+                    </div>
 
-                    <label class="demo-control">
+                    <div class="demo-control resolution-control">
                         <span>Resolution</span>
-                        <select id="resolutionSelect">
-                            <option value="512">512 x 512</option>
-                            <option value="768">768 x 768</option>
-                            <option value="1024" selected>1024 x 1024</option>
-                            <option value="1536">1536 x 1536</option>
-                            <option value="2048">2048 x 2048</option>
-                        </select>
-                    </label>
+                        <div class="option-group resolution-options" id="resolutionControls" role="group" aria-label="Resolution"></div>
+                    </div>
 
                     <div id="customTools" class="custom-tools">
                         <button class="blog-button secondary" id="clearCustom" type="button">Clear</button>
@@ -245,7 +279,7 @@
         </footer>
     </main>
 
-    <script type="module" src="app.js?v=11"></script>
+    <script type="module" src="app.js?v=14"></script>
     <script>
         (function () {
             var target = document.querySelector('#post-view-count');
