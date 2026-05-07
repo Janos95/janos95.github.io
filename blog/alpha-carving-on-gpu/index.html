@@ -148,6 +148,8 @@
             <section class="section-card">
                 <p>Alpha carving removes all points that can be swept out by a disk of radius <code>alpha</code>. A point is carved if some such disk covers it and the disk center can be moved in from the boundary without the disk colliding with the segment mesh. Blue is the alpha-carved reachable region; red marks pockets that the disk cannot reach.</p>
 
+                <p>The 3D analogue is like carving with an ice cream scoop: a radius-<code>alpha</code> ball can remove whatever volume it can reach from outside without intersecting the input. For a production 3D version, see <a href="https://doc.cgal.org/latest/Alpha_wrap_3/index.html" target="_blank" rel="noopener noreferrer">CGAL&rsquo;s 3D Alpha Wrapping</a>, which shrink-wraps triangle soups or meshes into watertight surface meshes using alpha and offset parameters.</p>
+
                 <figure class="figure-card">
                     <img class="alpha-preview" src="preview.gif?v=1" alt="Animated preview of alpha carving on scattered line segments">
                     <figcaption>Alpha decreases from 0.3 to 0 on the scattered segment field.</figcaption>
