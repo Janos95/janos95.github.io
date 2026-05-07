@@ -28,6 +28,7 @@ const els = {
 
 let selectedDrawingFile = DRAWINGS[0].file;
 let selectedResolution = 1024;
+let canvasContextConfigured = false;
 
 for (const drawing of DRAWINGS) {
   const button = document.createElement("button");
@@ -1089,7 +1090,7 @@ fn fs(in: VSOut) -> @location(0) vec4<f32> {
 function resizeCanvas(context, device, format) {
   const size = selectedResolution;
 
-  if (els.canvas.width !== size || els.canvas.height !== size) {
+  if (!canvasContextConfigured || els.canvas.width !== size || els.canvas.height !== size) {
     els.canvas.width = size;
     els.canvas.height = size;
     context.configure({
@@ -1097,6 +1098,7 @@ function resizeCanvas(context, device, format) {
       format,
       alphaMode: "opaque",
     });
+    canvasContextConfigured = true;
     return true;
   }
   return false;
