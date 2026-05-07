@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpha Carving on GPU - Janos Meny</title>
+    <meta name="description" content="An interactive WebGPU demo of alpha carving using clearance fields, atomic union-find, and jump flooding.">
+    <link rel="stylesheet" href="../blog.css?v=20260506c">
+    <style>
+        .post-body a {
+            color: var(--link-color);
+        }
+
+        .alpha-preview {
+            width: min(100%, 520px);
+            border: 1px solid #d7dde6;
+            background: #ffffff;
+        }
+
+        .pipeline-list {
+            margin-top: 0;
+        }
+
+        .alpha-demo {
+            margin-top: 22px;
+            padding-top: 16px;
+            border-top: 1px solid #d7dde6;
+        }
+
+        .demo-controls {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(160px, 1fr));
+            gap: 12px;
+            align-items: end;
+            margin-top: 12px;
+        }
+
+        .demo-control {
+            display: grid;
+            gap: 4px;
+            color: #555;
+            font-size: 0.92rem;
+            font-weight: 600;
+        }
+
+        .demo-control.alpha-control {
+            grid-column: 1 / -1;
+        }
+
+        .demo-control span {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .demo-control select,
+        .demo-control input[type="range"] {
+            width: 100%;
+            font: inherit;
+        }
+
+        .demo-control select {
+            min-height: 34px;
+            padding: 4px 8px;
+            border: 1px solid #d7dde6;
+            border-radius: 4px;
+            background: #f8fafc;
+            color: #222;
+        }
+
+        .demo-control input[type="range"] {
+            accent-color: var(--link-color);
+        }
+
+        .demo-stage {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin-top: 18px;
+        }
+
+        #gpuCanvas {
+            display: block;
+            width: min(100%, 640px);
+            height: auto;
+            aspect-ratio: 1 / 1;
+        }
+
+        .unsupported {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            padding: 18px;
+            background: rgba(244, 244, 244, 0.92);
+            color: #7c2d12;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .unsupported[hidden] {
+            display: none;
+        }
+
+        .demo-status {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 24px;
+            margin-top: 12px;
+            color: #555;
+            font-size: 0.92rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .demo-status div {
+            display: inline-flex;
+            gap: 8px;
+            align-items: baseline;
+        }
+
+        .demo-status .label {
+            color: #667085;
+            font-weight: 600;
+        }
+
+        @media (max-width: 560px) {
+            .demo-controls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page-shell">
+        <nav class="page-nav" aria-label="Primary">
+            <div class="nav-group">
+                <a class="nav-link" href="../../index.html">Home</a>
+                <a class="nav-link active" href="../index.html">Blog</a>
+            </div>
+        </nav>
+
+        <header class="hero">
+            <h1>Alpha Carving on GPU</h1>
+            <p class="dek">A small demo for computing the alpha-carved space of 2D segments in realtime on the GPU.</p>
+        </header>
+
+        <article class="post-body">
+            <section class="section-card">
+                <p>Alpha carving removes all points that can be swept out by a disk of radius <code>alpha</code>. A point is carved if some such disk covers it and the disk center can be moved in from the boundary without the disk colliding with the segment mesh. Blue is the alpha-carved reachable region; red marks pockets that the disk cannot reach.</p>
+
+                <figure class="figure-card">
+                    <img class="alpha-preview" src="preview.gif?v=1" alt="Animated preview of alpha carving on scattered line segments">
+                    <figcaption>Alpha decreases from 0.3 to 0 on the scattered segment field.</figcaption>
+                </figure>
+            </section>
+
+            <section class="section-card">
+                <h2>Compute Shader Structure</h2>
+                <p>For each alpha value, the carving pipeline runs the following 5 compute passes:</p>
+                <ol class="pipeline-list">
+                    <li><strong>Compute clearance:</strong> how far each grid cell is from the nearest segment.</li>
+                    <li><strong>Threshold by alpha:</strong> valid center = clearance >= alpha.</li>
+                    <li><strong>Union-find:</strong> atomically unions neighboring valid centers; boundary-connected sets are marked reachable.</li>
+                    <li><strong>Jump flood:</strong> starts with reachable centers as seeds and propagates the nearest reachable seed across the texture.</li>
+                    <li><strong>Compose:</strong> a pixel is blue if its nearest reachable center is within alpha; otherwise it is red.</li>
+                </ol>
+            </section>
+
+            <section class="section-card alpha-demo">
+                <h2>Interactive Demo</h2>
+                <div class="demo-controls" aria-label="Alpha carving controls">
+                    <label class="demo-control">
+                        <span>Drawing</span>
+                        <select id="meshSelect"></select>
+                    </label>
+
+                    <label class="demo-control">
+                        <span>Resolution</span>
+                        <select id="resolutionSelect">
+                            <option value="512">512 x 512</option>
+                            <option value="768">768 x 768</option>
+                            <option value="1024" selected>1024 x 1024</option>
+                            <option value="1536">1536 x 1536</option>
+                            <option value="2048">2048 x 2048</option>
+                        </select>
+                    </label>
+
+                    <label class="demo-control alpha-control">
+                        <span>Alpha <output id="alphaValue">0.080</output></span>
+                        <input id="alphaSlider" type="range" min="0" max="0.38" step="0.001" value="0.08">
+                    </label>
+                </div>
+
+                <div class="demo-stage">
+                    <canvas id="gpuCanvas" width="1024" height="1024" aria-label="Alpha carved space"></canvas>
+                    <div id="unsupported" class="unsupported" hidden>
+                        WebGPU is not available in this browser.
+                    </div>
+                </div>
+
+                <div class="demo-status" aria-live="polite">
+                    <div><span class="label">Compute update</span><span id="gpuText">--</span></div>
+                    <div><span class="label">Segments</span><span id="segmentText">--</span></div>
+                </div>
+            </section>
+        </article>
+
+        <footer class="post-views" aria-label="Post views">
+            Views: <span id="post-view-count" class="post-views-count"></span>
+        </footer>
+    </main>
+
+    <script type="module" src="app.js?v=1"></script>
+    <script>
+        (function () {
+            var target = document.querySelector('#post-view-count');
+            if (!target) {
+                return;
+            }
+
+            fetch('https://janos.goatcounter.com/counter/' + encodeURIComponent(window.location.pathname) + '.json')
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Counter request failed');
+                    }
+                    return response.json();
+                })
+                .then(function (data) {
+                    var count = Number(data.count);
+                    if (Number.isFinite(count)) {
+                        target.textContent = count.toLocaleString();
+                    }
+                })
+                .catch(function () {
+                    target.textContent = '';
+                });
+        })();
+    </script>
+    <script data-goatcounter="https://janos.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
