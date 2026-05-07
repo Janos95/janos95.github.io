@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prospero Challenge - Janos Meny</title>
     <meta name="description" content="A short introduction to the Prospero Challenge and notes on rendering a large expression quickly.">
-    <link rel="stylesheet" href="../blog.css?v=20260425b">
+    <link rel="stylesheet" href="../blog.css?v=20260506c">
     <script>
         (function () {
-            if (window.crossOriginIsolated || !('serviceWorker' in navigator)) {
+            if (window.location.protocol !== 'https:' || window.crossOriginIsolated || !('serviceWorker' in navigator)) {
                 return;
             }
 
@@ -21,7 +21,7 @@
     </script>
     <style>
         .post-body a {
-            color: #204f9a;
+            color: var(--link-color);
         }
 
         .benchmark-panel {
@@ -35,45 +35,6 @@
             flex-wrap: wrap;
             align-items: center;
             gap: 8px 12px;
-        }
-
-        .benchmark-button {
-            min-height: 34px;
-            padding: 7px 13px;
-            border: 1px solid #9fb3d1;
-            border-radius: 6px;
-            background: #eef4ff;
-            color: #204f9a;
-            font: inherit;
-            font-weight: 600;
-            line-height: 1.2;
-            cursor: pointer;
-            transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
-        }
-
-        .benchmark-button:hover,
-        .benchmark-button:focus-visible {
-            border-color: #204f9a;
-            background: #e2ecfb;
-            color: #183c78;
-        }
-
-        .benchmark-button:disabled {
-            cursor: wait;
-            opacity: 0.68;
-        }
-
-        .benchmark-button.secondary {
-            background: transparent;
-            color: #555;
-            border-color: #cbd5e1;
-        }
-
-        .benchmark-button.secondary:hover,
-        .benchmark-button.secondary:focus-visible {
-            border-color: #94a3b8;
-            background: #edf1f5;
-            color: #333;
         }
 
         .benchmark-status {
@@ -128,8 +89,8 @@
 
                 <div class="benchmark-panel" aria-label="Prospero WASM benchmark">
                     <div class="benchmark-toolbar">
-                        <button class="benchmark-button" type="button" data-prospero-run>Run benchmark</button>
-                        <button class="benchmark-button secondary" type="button" data-prospero-reset>Reset</button>
+                        <button class="blog-button" type="button" data-prospero-run>Run benchmark</button>
+                        <button class="blog-button secondary" type="button" data-prospero-reset>Reset</button>
                         <span class="benchmark-status" data-prospero-status>Runs the 1024x1024 Prospero renderer in WebAssembly.</span>
                     </div>
                     <div class="benchmark-canvas-wrap">
@@ -172,12 +133,12 @@
                 });
         })();
     </script>
-    <script src="wasm/prospero-data.js?v=20260426f"></script>
-    <script src="wasm/prospero-binary.js?v=20260426f"></script>
-    <script src="wasm/prospero.js?v=20260426f"></script>
-    <script src="wasm-omp/prospero-binary.js?v=20260426f"></script>
-    <script src="wasm-omp/prospero.js?v=20260426f"></script>
-    <script src="wasm/runner.js?v=20260426f"></script>
+    <script src="wasm/prospero-data.js?v=20260426g"></script>
+    <script src="wasm/prospero-binary.js?v=20260426g"></script>
+    <script src="wasm/prospero.js?v=20260426g"></script>
+    <script src="wasm-omp/prospero-binary.js?v=20260426g"></script>
+    <script src="wasm-omp/prospero.js?v=20260426g"></script>
+    <script src="wasm/runner.js?v=20260426g"></script>
     <script data-goatcounter="https://janos.goatcounter.com/count"
             async src="//gc.zgo.at/count.js"></script>
 </body>

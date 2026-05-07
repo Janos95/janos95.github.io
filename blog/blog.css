@@ -2,6 +2,13 @@
     box-sizing: border-box;
 }
 
+:root {
+    --link-color: #2f6fba;
+    --link-color-hover: #1f548f;
+    --link-border-color: #9fb9da;
+    --link-background-color: #eef5ff;
+}
+
 html {
     color-scheme: light;
 }
@@ -17,6 +24,15 @@ body {
 
 img {
     max-width: 100%;
+}
+
+a {
+    color: var(--link-color);
+}
+
+a:hover,
+a:focus-visible {
+    color: var(--link-color-hover);
 }
 
 .page-shell {
@@ -55,12 +71,12 @@ img {
 
 .nav-link:hover,
 .nav-link:focus-visible {
-    color: #204f9a;
-    border-bottom-color: #9fb3d1;
+    color: var(--link-color-hover);
+    border-bottom-color: var(--link-border-color);
 }
 
 .nav-link.active {
-    color: #204f9a;
+    color: var(--link-color-hover);
     border-bottom-color: currentColor;
     font-weight: 600;
 }
@@ -155,6 +171,7 @@ img {
 }
 
 .post-preview-link {
+    position: relative;
     display: block;
     width: 100%;
     margin: 0;
@@ -189,6 +206,45 @@ img {
     margin: 0;
 }
 
+.blog-button {
+    min-height: 32px;
+    padding: 6px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    background: #f8fafc;
+    color: var(--link-color);
+    font: inherit;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.blog-button:hover,
+.blog-button:focus-visible {
+    border-color: var(--link-border-color);
+    background: var(--link-background-color);
+    color: var(--link-color-hover);
+}
+
+.blog-button:disabled {
+    cursor: wait;
+    opacity: 0.68;
+}
+
+.blog-button.secondary {
+    background: #f4f4f4;
+    border-color: #d7dde6;
+    color: #667085;
+}
+
+.blog-button.secondary:hover,
+.blog-button.secondary:focus-visible {
+    border-color: #cbd5e1;
+    background: #edf1f5;
+    color: #333;
+}
+
 .figure-card {
     margin: 18px 0;
     padding: 0;
@@ -214,7 +270,7 @@ img {
 }
 
 .link-pill {
-    color: #0000ee;
+    color: var(--link-color);
 }
 
 .list-clean {

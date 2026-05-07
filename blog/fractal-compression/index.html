@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fractal Compression - Janos Meny</title>
     <meta name="description" content="Fractal image compression, the contraction-mapping viewpoint behind it and an interactive explanation showing how to find contractions via range-domain blocks.">
-    <link rel="stylesheet" href="../blog.css?v=20260425b">
+    <link rel="stylesheet" href="../blog.css?v=20260506c">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
     <style>
         .intro-diagram {
@@ -171,21 +171,6 @@
             font: inherit;
         }
 
-        button,
-        input::file-selector-button {
-            padding: 10px 14px;
-            border: 1px solid #bfd0e6;
-            border-radius: 999px;
-            background: #f8fbff;
-            color: #1d4ed8;
-            cursor: pointer;
-        }
-
-        button:disabled {
-            opacity: 0.55;
-            cursor: not-allowed;
-        }
-
         #workCanvas {
             display: none;
         }
@@ -303,7 +288,7 @@
         }
 
         .pseudo-code .pc-kw {
-            color: #204f9a;
+            color: var(--link-color);
             font-weight: 600;
         }
 
@@ -341,7 +326,7 @@
         }
 
         .footnotes a {
-            color: #204f9a;
+            color: var(--link-color);
         }
     </style>
     <script defer src="fractal.js?v=20260425c"></script>
@@ -435,8 +420,8 @@
                         </div>
                     </div>
                     <div class="control-row walkthrough-controls">
-                        <button id="walkthroughNext" type="button" disabled>Next</button>
-                        <button id="walkthroughReset" type="button" disabled>Reset</button>
+                        <button class="blog-button" id="walkthroughNext" type="button" disabled>Next</button>
+                        <button class="blog-button secondary" id="walkthroughReset" type="button" disabled>Reset</button>
                     </div>
                     <p id="walkthroughCaption" class="walkthrough-caption">Loading peppers.</p>
                 </div>
@@ -456,8 +441,8 @@
                             <img id="originalPreview" alt="Original preview">
                         </div>
                         <div class="control-row">
-                            <button id="chooseButton" type="button">Choose image</button>
-                            <button id="compressButton" type="button" disabled>Compress</button>
+                            <button class="blog-button" id="chooseButton" type="button">Choose image</button>
+                            <button class="blog-button" id="compressButton" type="button" disabled>Compress</button>
                         </div>
                         <input type="file" id="imageInput" accept="image/*" hidden>
                     </section>
@@ -474,8 +459,8 @@
                             <canvas id="decompressCanvas" width="512" height="512"></canvas>
                         </div>
                         <div class="control-row">
-                            <button id="iterateButton" disabled>Iterate Once</button>
-                            <button id="resetButton">Reset noise</button>
+                            <button class="blog-button" id="iterateButton" disabled>Iterate Once</button>
+                            <button class="blog-button secondary" id="resetButton">Reset noise</button>
                         </div>
                     </section>
                 </div>
