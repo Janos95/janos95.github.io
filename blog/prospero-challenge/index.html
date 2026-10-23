@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prospero Challenge - Janos Meny</title>
-    <meta name="description" content="A short introduction to the Prospero Challenge and notes on rendering a large expression quickly.">
+    <meta name="description" content="Rendering the Prospero Challenge quickly on a CPU by splitting the expression into hundreds of small shapes.">
     <link rel="stylesheet" href="../blog.css?v=20261022a">
     <script>
         (function () {
@@ -56,6 +56,26 @@
             image-rendering: pixelated;
         }
 
+        .timing-table {
+            border-collapse: collapse;
+            margin: 4px 0 14px;
+            font-size: 0.95rem;
+        }
+        .timing-table th,
+        .timing-table td {
+            padding: 6px 16px 6px 0;
+            border-bottom: 1px solid #d7dde6;
+            text-align: left;
+        }
+        .timing-table td:last-child,
+        .timing-table th:last-child {
+            text-align: right;
+            padding-right: 0;
+        }
+        .figure-card img {
+            width: 100%;
+            max-width: 640px;
+        }
         .benchmark-output {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -99,7 +119,47 @@
                     <div class="benchmark-output" data-prospero-output></div>
                 </div>
 
-                <p>This post will collect my notes on the challenge and the implementation details I found most interesting.</p>
+                <p>The renderer above draws the 1024x1024 image entirely on the CPU, compiled to WebAssembly. Here's how it works.</p>
+            </section>
+
+            <section class="section-card">
+                <h2>First try: tiles and intervals</h2>
+                <p>My first version used the standard trick for this kind of problem. Split the image into four tiles and evaluate the expression on each tile with interval arithmetic. If the whole interval is negative, the tile is inside the shape and can be filled. If it's positive, the tile is empty. Only tiles that straddle zero get split further, down to 16x16 pixels, which are evaluated pixel by pixel.</p>
+                <p>The intervals also let you simplify the program as you go down. If one side of a <code>min</code> is always smaller on a tile, the other side can't matter there, so it gets dropped from that tile's program. With OpenMP and batched evaluation of the small tiles, this got to about 2 ms per frame on my MacBook Air.</p>
+            </section>
+
+            <section class="section-card">
+                <h2>It's just a lot of small shapes</h2>
+                <p>If you stare at the program long enough, you notice that it is one giant <code>min</code> of a few hundred small shapes, each describing a piece of a letter. For <code>prospero.vm</code> there are 7,866 instructions and 666 of these shapes, each only about 20 instructions long. Each shape covers a tiny part of the image, but the tiling approach still has to carry all of them around until the intervals rule them out.</p>
+                <p>So the faster version renders every shape on its own:</p>
+                <ol class="list-clean">
+                    <li><strong>Split.</strong> Walk down from the root through the nested <code>min</code> nodes and collect every operand that isn't itself a <code>min</code>. These are the 666 terms the benchmark reports.</li>
+                    <li><strong>Simplify.</strong> Copy each term into a small program of its own, fold its constants, and note which parts are linear in x and y. Tests like <code>sqrt(e) - r</code> become <code>e - r&sup2;</code>, which has the same sign and is cheaper.</li>
+                    <li><strong>Bound.</strong> The shape is where the term is at most zero. Pushing that condition backwards through the term with interval arithmetic gives a range for each linear part, which is a pair of half-planes. Clipping the square against them gives a tight polygon around the shape, and its bounding box in pixels. 87 of the 666 shapes turn out to be empty and are skipped right here.</li>
+                    <li><strong>Draw.</strong> Many shapes are axis-aligned bars, which fill their box exactly, so the box is just filled. Everything else gets the tiling treatment from before, but only inside its own small box.</li>
+                </ol>
+                <figure class="figure-card">
+                    <img src="term-boxes.png" alt="The rendered text with a rectangle drawn around each shape's bounding box" width="1024" height="1024" loading="lazy">
+                    <figcaption>Every shape's bounding box. Blue boxes are filled directly; orange ones are subdivided and evaluated. 270 of the 579 drawn shapes are plain fills.</figcaption>
+                </figure>
+                <p>I tried this idea early on and gave up because pulling 700 programs out of the big one took over a millisecond. What makes it work is never copying the whole program: each frame only walks the <code>min</code> tree and each term's own nodes, and uses generation counters instead of clearing large arrays.</p>
+            </section>
+
+            <section class="section-card">
+                <h2>How much faster?</h2>
+                <p>Single-threaded, on the same machine, the per-shape renderer is almost twice as fast as the improved tiling version and more than three times as fast as my first one:</p>
+                <table class="timing-table">
+                    <thead>
+                        <tr><th>Version</th><th>ms per frame</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Tiling, first version</td><td>~21</td></tr>
+                        <tr><td>Tiling with better pruning and SIMD</td><td>~11</td></tr>
+                        <tr><td>One shape at a time</td><td>~6</td></tr>
+                    </tbody>
+                </table>
+                <p>Those numbers come from a slow 2-core cloud machine, so the ratios matter more than the absolute times. For a real number on your own device, run the benchmark at the top of the page.</p>
+                <p>The code is on <a href="https://github.com/Janos95/prospero_vm" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>
             </section>
         </article>
 
