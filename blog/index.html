@@ -3,70 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog - Janos Meny</title>
-    <meta name="description" content="Technical notes, demos, and project write-ups by Janos Meny.">
-    <link rel="stylesheet" href="blog.css?v=20260506c">
+    <title>Posts - Janos Meny</title>
+    <meta name="description" content="Essays, demos, and write-ups by Janos Meny.">
+    <link rel="stylesheet" href="blog.css?v=20261022a">
 </head>
 <body>
     <main class="page-shell">
         <nav class="page-nav" aria-label="Primary">
             <div class="nav-group">
                 <a class="nav-link" href="../index.html">Home</a>
-                <a class="nav-link active" href="index.html" aria-current="page">Blog</a>
+                <a class="nav-link active" href="index.html" aria-current="page">Posts</a>
             </div>
         </nav>
 
-        <h1>Blog</h1>
+        <h1>Posts</h1>
 
-        <section class="post-entry">
-            <a class="post-preview-link" href="alpha-carving-on-gpu/index.html" aria-label="Open Alpha Carving on GPU post">
-                <img class="post-preview-image" src="alpha-carving-on-gpu/preview.gif?v=1" alt="Animated preview of alpha carving on scattered line segments">
-            </a>
-            <div class="post-copy">
-                <h2><a href="alpha-carving-on-gpu/index.html">Alpha Carving on GPU</a></h2>
-                <p>An interactive demo showing how disk reachability can be computed entirely with WebGPU compute shaders.</p>
-            </div>
-        </section>
-
-        <section class="post-entry">
-            <a class="post-preview-link" href="open-erdos-problems/index.html" aria-label="Mining Erdős Problems post">
-                <img class="post-preview-image" src="open-erdos-problems/preview-miner.jpg?v=1" alt="Portrait of Paul Erdős with miner helmet and pickaxe">
-            </a>
-            <div class="post-copy">
-                <h2><a href="open-erdos-problems/index.html">Mining Erdős Problems</a></h2>
-                <p>A scraped table of every Erdős problem currently marked open, with LLM-evaluated hardness and interestingness scores from 0 to 100.</p>
-            </div>
-        </section>
-
-        <section class="post-entry">
-            <a class="post-preview-link" href="prospero-challenge/index.html" aria-label="Open Prospero Challenge post">
-                <img class="post-preview-image" src="prospero-challenge/preview.png?v=1" alt="Rendered Prospero Challenge image showing text from The Tempest">
-            </a>
-            <div class="post-copy">
-                <h2><a href="prospero-challenge/index.html">Prospero Challenge</a></h2>
-                <p>How to render thousands of math expressions in under a millisecond on a CPU.</p>
-            </div>
-        </section>
-
-        <section class="post-entry">
-            <a class="post-preview-link" href="fractal-compression/index.html" aria-label="Open Fractal Compression post">
-                <img class="post-preview-image" src="fractal-compression/preview.webp?v=4" alt="Animated preview of the fractal compression walkthrough using peppers">
-            </a>
-            <div class="post-copy">
-                <h2><a href="fractal-compression/index.html">Fractal Compression</a></h2>
-                <p>Fractal image compression, the contraction-mapping viewpoint behind it and an interactive explanation showing how to find contractions via range-domain blocks.</p>
-            </div>
-        </section>
-
-        <section class="post-entry">
-            <a class="post-preview-link" href="can-frontier-ai-labs-make-money/index.html" aria-label="Open Can Frontier AI Labs Make Money? post">
-                <img class="post-preview-image" src="can-frontier-ai-labs-make-money/preview.jpg?v=1" alt="GPU accelerator with dollar bills raining down in a data center">
-            </a>
-            <div class="post-copy">
-                <h2><a href="can-frontier-ai-labs-make-money/index.html">Can Frontier AI Labs Make Money?</a></h2>
-                <p>Short essay addressing Dwarkesh&rsquo;s question of whether and how model companies can actually start making money.</p>
-            </div>
-        </section>
+        <ul class="post-list">
+            <li>
+                <a class="post-item" href="alpha-carving-on-gpu/index.html">
+                    <img class="post-thumb" src="alpha-carving-on-gpu/preview.gif?v=1" alt="" loading="lazy">
+                    <span class="post-text">
+                        <span class="post-title">Alpha Carving on GPU</span>
+                        <span class="post-desc">An interactive demo showing how disk reachability can be computed entirely with WebGPU compute shaders.</span>
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a class="post-item" href="open-erdos-problems/index.html">
+                    <img class="post-thumb" src="open-erdos-problems/preview-miner.jpg?v=1" alt="" loading="lazy">
+                    <span class="post-text">
+                        <span class="post-title">Mining Erdős Problems</span>
+                        <span class="post-desc">A scraped table of every Erdős problem currently marked open, with LLM-evaluated hardness and interestingness scores from 0 to 100.</span>
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a class="post-item" href="prospero-challenge/index.html">
+                    <img class="post-thumb" src="prospero-challenge/preview.png?v=1" alt="" loading="lazy">
+                    <span class="post-text">
+                        <span class="post-title">Prospero Challenge</span>
+                        <span class="post-desc">How to render thousands of math expressions in under a millisecond on a CPU.</span>
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a class="post-item" href="fractal-compression/index.html">
+                    <img class="post-thumb" src="fractal-compression/preview.webp?v=4" alt="" loading="lazy">
+                    <span class="post-text">
+                        <span class="post-title">Fractal Compression</span>
+                        <span class="post-desc">Fractal image compression, the contraction-mapping viewpoint behind it and an interactive explanation showing how to find contractions via range-domain blocks.</span>
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a class="post-item" href="can-frontier-ai-labs-make-money/index.html">
+                    <img class="post-thumb" src="can-frontier-ai-labs-make-money/preview.jpg?v=1" alt="" loading="lazy">
+                    <span class="post-text">
+                        <span class="post-title">Can Frontier AI Labs Make Money?</span>
+                        <span class="post-desc">Short essay addressing Dwarkesh&rsquo;s question of whether and how model companies can actually start making money.</span>
+                    </span>
+                </a>
+            </li>
+        </ul>
     </main>
 </body>
 </html>
