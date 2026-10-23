@@ -19,48 +19,27 @@
             border-radius: 5px;
         }
 
-        .project {
+        .project-list {
             margin-bottom: 28px;
         }
 
-        .project-feature {
-            --project-thumb-width: clamp(104px, 28vw, 180px);
-            --project-thumb-height: calc(var(--project-thumb-width) * 0.78);
-            display: grid;
-            grid-template-columns: var(--project-thumb-width) minmax(0, 1fr);
-            gap: 16px;
+        .project-list .post-item {
             align-items: flex-start;
         }
 
-        .project-media {
-            width: var(--project-thumb-width);
-            height: var(--project-thumb-height);
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-        }
-
-        .project-preview {
-            width: 100%;
-            height: 100%;
+        .project-thumb-link {
+            flex: 0 0 auto;
             display: block;
-            background: transparent;
-            border: none;
+        }
+
+        .project-list .post-thumb {
+            background: #ffffff;
             object-fit: contain;
-            object-position: left center;
         }
 
-        .project-copy {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .project-copy h3 {
-            margin: 0 0 8px;
-        }
-
-        .project-copy p {
-            margin: 0 0 10px;
+        .project-links {
+            margin-top: 2px;
+            font-size: 0.95rem;
         }
 
         .project-links,
@@ -74,16 +53,15 @@
             margin: 0 0 28px;
             padding: 0;
             list-style: none;
+            border-top: 1px solid #d7dde6;
         }
 
         .publication {
             display: flex;
             flex-direction: column;
             gap: 4px;
-        }
-
-        .publication + .publication {
-            margin-top: 18px;
+            padding: 16px 0;
+            border-bottom: 1px solid #d7dde6;
         }
 
         .publication-title {
@@ -107,17 +85,8 @@
                 align-items: flex-start;
             }
 
-            .project-feature {
-                gap: 22px;
-            }
         }
 
-        @media (max-width: 380px) {
-            .project-feature {
-                --project-thumb-width: 92px;
-                gap: 12px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -155,53 +124,51 @@
         </ul>
 
         <h2>Projects</h2>
-        <p>Some things I've worked on:</p>
-
-        <div class="project">
-            <div class="project-feature">
-                <a class="project-media" href="https://github.com/Janos95/yubi-yam" target="_blank" rel="noopener noreferrer">
-                    <img src="gripper_preview.png" alt="CAD render of the YUBI gripper adapted to the YAM arm" class="project-preview">
-                </a>
-                <div class="project-copy">
-                    <h3><a href="https://github.com/Janos95/yubi-yam" target="_blank" rel="noopener noreferrer">YUBI gripper for the YAM arm</a></h3>
-                    <p>An adaptation of Toyota and AIRoA's open <a href="https://yubi.airoa.io/" target="_blank" rel="noopener noreferrer">YUBI</a> gripper to the I2RT YAM arm. It runs off the arm's own gripper motor, so it needs no extra power supply or cables. Designed and simulated; I'm building it now.</p>
-                    <p class="project-links">
-                        <a href="https://github.com/Janos95/yubi-yam" target="_blank" rel="noopener noreferrer">GitHub</a>
-                    </p>
+        <ul class="post-list project-list">
+            <li>
+                <div class="post-item">
+                    <a class="project-thumb-link" href="https://github.com/Janos95/yubi-yam" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">
+                        <img class="post-thumb" src="gripper_preview.png" alt="Render of the YUBI glove and the YUBI gripper adapted to the YAM arm" loading="lazy">
+                    </a>
+                    <span class="post-text">
+                        <a class="post-title" href="https://github.com/Janos95/yubi-yam" target="_blank" rel="noopener noreferrer">YUBI gripper for the YAM arm</a>
+                        <span class="post-desc">Toyota and AIRoA's open <a href="https://yubi.airoa.io/" target="_blank" rel="noopener noreferrer">YUBI</a> gripper, adapted to work on the YAM arm.</span>
+                        <span class="project-links">
+                            <a href="https://github.com/Janos95/yubi-yam" target="_blank" rel="noopener noreferrer">GitHub</a>
+                        </span>
+                    </span>
                 </div>
-            </div>
-        </div>
-
-        <div class="project">
-            <div class="project-feature">
-                <a class="project-media" href="https://github.com/Janos95/mantis" target="_blank" rel="noopener noreferrer">
-                    <img src="mantis_preview.png" alt="Mantis preview" class="project-preview">
-                </a>
-                <div class="project-copy">
-                    <h3><a href="https://github.com/Janos95/mantis" target="_blank" rel="noopener noreferrer">Mantis</a></h3>
-                    <p>Really fast distance queries to triangle meshes, sped up with SIMD.</p>
-                    <p class="project-links">
-                        <a href="https://github.com/Janos95/mantis" target="_blank" rel="noopener noreferrer">GitHub</a>
-                    </p>
+            </li>
+            <li>
+                <div class="post-item">
+                    <a class="project-thumb-link" href="https://github.com/Janos95/mantis" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">
+                        <img class="post-thumb" src="mantis_preview.png" alt="Mantis preview" loading="lazy">
+                    </a>
+                    <span class="post-text">
+                        <a class="post-title" href="https://github.com/Janos95/mantis" target="_blank" rel="noopener noreferrer">Mantis</a>
+                        <span class="post-desc">Really fast distance queries to triangle meshes, sped up with SIMD.</span>
+                        <span class="project-links">
+                            <a href="https://github.com/Janos95/mantis" target="_blank" rel="noopener noreferrer">GitHub</a>
+                        </span>
+                    </span>
                 </div>
-            </div>
-        </div>
-
-        <div class="project">
-            <div class="project-feature">
-                <a class="project-media" href="https://janos95.github.io/onion/" target="_blank" rel="noopener noreferrer">
-                    <img src="onion_preview.gif" alt="Onion chess preview" class="project-preview">
-                </a>
-                <div class="project-copy">
-                    <h3><a href="https://janos95.github.io/onion/" target="_blank" rel="noopener noreferrer">Onion</a></h3>
-                    <p>A little chess engine I wrote, with a WebGPU renderer that draws everything using SDFs. Fair warning: it might make you cry.</p>
-                    <p class="project-links">
-                        <a href="https://janos95.github.io/onion/" target="_blank" rel="noopener noreferrer">Play</a>
-                        <a href="https://github.com/Janos95/onion" target="_blank" rel="noopener noreferrer">GitHub</a>
-                    </p>
+            </li>
+            <li>
+                <div class="post-item">
+                    <a class="project-thumb-link" href="https://janos95.github.io/onion/" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">
+                        <img class="post-thumb" src="onion_preview.gif" alt="Onion chess preview" loading="lazy">
+                    </a>
+                    <span class="post-text">
+                        <a class="post-title" href="https://janos95.github.io/onion/" target="_blank" rel="noopener noreferrer">Onion</a>
+                        <span class="post-desc">A little chess engine I wrote, with a WebGPU renderer that draws everything using SDFs. Fair warning: it might make you cry.</span>
+                        <span class="project-links">
+                            <a href="https://janos95.github.io/onion/" target="_blank" rel="noopener noreferrer">Play</a>
+                            <a href="https://github.com/Janos95/onion" target="_blank" rel="noopener noreferrer">GitHub</a>
+                        </span>
+                    </span>
                 </div>
-            </div>
-        </div>
+            </li>
+        </ul>
 
         <h2>Contact</h2>
         <p>I'm always happy to chat about math, graphics, or whatever you're building, so feel free to reach out!</p>
